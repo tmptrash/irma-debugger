@@ -8,8 +8,15 @@
       display: flex;
       flex-direction: column;
       justify-content: left;
-      .row0, .row1 {
+      .row0, .row1, .row2 {
         display: flex;
+      }
+      .row1 {
+        height: 502px;
+      }
+      .row2 {
+        margin-top: 10px;
+        justify-content: left;
       }
     }
 }

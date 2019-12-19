@@ -4,6 +4,7 @@ import Config from './../config/Config';
 import Code from './../code/Code';
 import World from './../world/World';
 import Info from './../info/Info';
+import Buttons from './../buttons/Buttons';
 
 function App() {
   return (
@@ -16,6 +17,9 @@ function App() {
         <div className="row1">
           <Code></Code>
           <Info></Info>
+        </div>
+        <div className="row2">
+          <Buttons></Buttons>
         </div>
       </div>
     </div>
