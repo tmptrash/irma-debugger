@@ -1,8 +1,9 @@
 import React from 'react';
+import './Config.scss';
 
 function Config() {
   return (
-    <div className="Config">
+    <div className="config">
       <textarea></textarea>
     </div>
   );

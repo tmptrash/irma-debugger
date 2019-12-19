@@ -1,0 +1,14 @@
+.code {
+    height: 300px;
+    display: flex;
+    .rows {
+        width: 60px;
+        height: 500px;
+        border: 1px solid #ccc;
+        border-right: none;
+    }
+    textarea {
+        height: 496px;
+        width: 338px;
+    }
+}
