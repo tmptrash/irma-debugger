@@ -2,16 +2,20 @@
     height: 300px;
     display: flex;
     .rows {
-        width: 60px;
+        width: 56px;
         height: 500px;
         border: 2px solid #ccc;
         border-right: none;
         font-family: monospace;
         font-size: 14px;
+        text-align: left;
         padding-top: 2px;
+        padding-left: 4px;
+        overflow: hidden;
+        color: #888;
     }
     textarea {
-        height: 496px;
+        height: 498px;
         width: 338px;
         border: 2px solid #ccc;
         font-family: monospace;

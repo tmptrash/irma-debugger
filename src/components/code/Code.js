@@ -24,11 +24,12 @@ class Code extends React.Component {
     const onChange = this._onChange.bind(this);
     const errMsg   = validCls ? 'Invalid code' : '';
     const value    = this.state.code;
+    const onScroll = this._onScroll.bind(this);
 
     return (
       <div className="code">
-        <div className="rows">{this._lines(value).map(line => <div>{line}</div>)}</div>
-        <textarea title={errMsg} className={validCls} value={value} onChange={onChange}></textarea>
+        <div className="rows">{this._lines(value).map((line,i) => <div key={i}>{line}</div>)}</div>
+        <textarea title={errMsg} className={validCls} value={value} onChange={onChange} onScroll={onScroll}></textarea>
       </div>
     );
   }
@@ -39,7 +40,8 @@ class Code extends React.Component {
     const map  = this._map;
 
     for (let i = 0, len = code.length; i < len; i++) {
-      if (map[code[i]] === undefined && code[i].trim()[0] !== '#') {return false}
+      const line = code[i].trim();
+      if (map[code[i]] === undefined && line[0] !== '#' && line !== '') {return false}
     }
 
     return true;
@@ -47,6 +49,11 @@ class Code extends React.Component {
 
   _onChange(e) {
     Store.dispatch(Actions.code(e.target.value));
+  }
+
+  _onScroll(e) {
+    const target = e.nativeEvent.target;
+    target.parentNode.firstChild.scrollTop = target.scrollTop;
   }
 
   _cmdMap() {
@@ -68,8 +75,8 @@ class Code extends React.Component {
     let   line     = 0;
 
     for (let i = 0; i < len; i++) {
-      const ch = splitted[i].trim()[0];
-      lines[i] = ch === '#' ? '\u0000' : ++line;
+      const ln = splitted[i].trim();
+      lines[i] = ln[0] === '#' || ln === '' ? '\u0000' : ++line;
     }
 
     return lines;
