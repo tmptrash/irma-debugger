@@ -20,9 +20,9 @@ class Code extends React.Component {
   componentWillUnmount() {this.unsubscrube()}
 
   render () {
-    const validCls = this._isValid(this.state.config) ? '' : 'error';
+    const validCls = this._isValid(this.state.code) ? '' : 'error';
     const onChange = this._onChange.bind(this);
-    const errMsg   = validCls ? 'Invalid configuration' : '';
+    const errMsg   = validCls ? 'Invalid code' : '';
     const value    = this.state.code;
 
     return (
@@ -34,6 +34,7 @@ class Code extends React.Component {
   }
 
   _isValid() {
+    if (this.state.code === '') {return true}
     const code = this.state.code.split('\n');
     const map  = this._map;
 
@@ -54,7 +55,7 @@ class Code extends React.Component {
     const keys      = Object.keys(map);
 
     for (let i = 0, len = keys.length; i < len; i++) {
-      revertMap[map[keys[i]][0]] = keys[i];
+      revertMap[map[keys[i]][0]] = +keys[i];
     }
 
     return revertMap;
