@@ -5,5 +5,9 @@
     textarea {
         height: 196px;
         width: 400px;
+        &.error {
+            border: 1px dashed red;
+            outline: none;
+        }
     }
 }
