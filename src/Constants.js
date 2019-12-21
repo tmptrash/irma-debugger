@@ -4,5 +4,6 @@
  * @author flatline
  */
 export default {
-    CONFIG: 0
+    CONFIG: 0,
+    CODE  : 1
 };

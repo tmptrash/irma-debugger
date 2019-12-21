@@ -6,5 +6,6 @@
 import Constants from './Constants';
 
 export const Actions = {
-  config: value => ({type: Constants.CONFIG, value})
+  config: value => ({type: Constants.CONFIG, value}),
+  code  : value => ({type: Constants.CODE, value})
 };
