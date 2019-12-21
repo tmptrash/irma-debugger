@@ -27,7 +27,7 @@ class Code extends React.Component {
 
     return (
       <div className="code">
-        <div className="rows"></div>
+        <div className="rows">{this._lines(value).map(line => <div>{line}</div>)}</div>
         <textarea title={errMsg} className={validCls} value={value} onChange={onChange}></textarea>
       </div>
     );
@@ -39,7 +39,7 @@ class Code extends React.Component {
     const map  = this._map;
 
     for (let i = 0, len = code.length; i < len; i++) {
-      if (map[code[i]] === undefined) {return false}
+      if (map[code[i]] === undefined && code[i].trim()[0] !== '#') {return false}
     }
 
     return true;
@@ -59,6 +59,20 @@ class Code extends React.Component {
     }
 
     return revertMap;
+  }
+
+  _lines(code) {
+    const splitted = code.split('\n');
+    const len      = splitted.length;
+    const lines    = new Array(len);
+    let   line     = 0;
+
+    for (let i = 0; i < len; i++) {
+      const ch = splitted[i].trim()[0];
+      lines[i] = ch === '#' ? '\u0000' : ++line;
+    }
+
+    return lines;
   }
 }
 
