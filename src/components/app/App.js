@@ -5,11 +5,13 @@ import Code from './../code/Code';
 import World from './../world/World';
 import Info from './../info/Info';
 import Buttons from './../buttons/Buttons';
+import Package from './../../../package.json'
 
 function App() {
   return (
     <div className="app">
       <div className="body">
+        <h1>irma debugger v{Package.version}</h1>
         <div className="row0">
           <Config></Config>
           <World></World>
