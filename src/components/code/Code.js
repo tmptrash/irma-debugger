@@ -7,13 +7,16 @@ import Bytes2Code from 'irma/src/irma/Bytes2Code';
 class Code extends React.Component {
   constructor() {
     super();
-    this.state = {code: Store.getState().code};
-    this._map  = this._cmdMap();
+    const state    = Store.getState();
+    this.state     = {code: state.code, line: 0};
+    this._map      = this._cmdMap();
+    this._linesMap = {};
   }
 
   componentDidMount() {
     this.unsubscribe = Store.subscribe(() => {
-      this.setState({code: Store.getState().code});
+      const state = Store.getState();
+      this.setState({code: state.code, line: state.line});
     });
   }
 
@@ -25,10 +28,12 @@ class Code extends React.Component {
     const errMsg   = validCls ? 'Invalid code' : '';
     const value    = this.state.code;
     const onScroll = this._onScroll.bind(this);
+    const lines    = this._lines(value);
+    const curLine  = this.state.line;
 
     return (
       <div className="code">
-        <div className="rows">{this._lines(value).map((line,i) => <div key={i}>{line}</div>)}</div>
+        <div className="rows">{lines.map((line,i) => <div key={i} className={lines[i] === curLine ? 'line' : ''}>{line}</div>)}</div>
         <textarea title={errMsg} className={validCls} value={value} onChange={onChange} onScroll={onScroll}></textarea>
       </div>
     );
@@ -72,7 +77,7 @@ class Code extends React.Component {
     const splitted = code.split('\n');
     const len      = splitted.length;
     const lines    = new Array(len);
-    let   line     = 0;
+    let   line     = -1;
 
     for (let i = 0; i < len; i++) {
       const ln = splitted[i].trim();

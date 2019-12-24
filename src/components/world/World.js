@@ -3,7 +3,7 @@ import './World.scss';
 
 function World() {
   return (
-    <div className="world"></div>
+    <div id="world" className="world"></div>
   );
 }
 

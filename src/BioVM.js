@@ -23,11 +23,27 @@ function applyCfg() {
         WORLD_HEIGHT         : 10,
         WORLD_CANVAS_WIDTH   : 10,
         WORLD_CANVAS_HEIGHT  : 10,
+        WORLD_CANVAS_QUERY   : '#world',
+        worldCanvasButtons   : false,
         DB_ON                : false,
-        orgAmount            : 1
+        orgAmount            : 1,
+        orgMutationPeriod    : 10000000,
+        molAmount            : 5,
+        PLUGINS              : [],
     });
 }
 Store.subscribe(applyCfg);
 applyCfg();
-// TODO: Canvas destination id should be set here somehow
-export default new BioVM();
+/**
+ * Instance of BioVM
+ * @singleton
+ */
+let bioVM = null;
+/**
+ * Creates BioVM instance as a singleton
+ */
+export default {
+    getVM: () => {
+        return bioVM || (bioVM = new BioVM());
+    }
+}
