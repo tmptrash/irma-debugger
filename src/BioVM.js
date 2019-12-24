@@ -34,7 +34,6 @@ function applyCfg() {
         WORLD_CANVAS_QUERY   : '#world',
         worldCanvasButtons   : false,
         DB_ON                : false,
-        orgAmount            : 1, // we may debug only one organism
         orgMutationPeriod    : 10000000,
         molAmount            : 5,
         PLUGINS              : []
