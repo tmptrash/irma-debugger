@@ -18,6 +18,7 @@ class Buttons extends React.Component {
     _onStep() {
         const vm = BioVM.getVM();
         vm.run();
+        vm.world.canvas.update();
         Store.dispatch(Actions.line(vm.orgs.get(0).line));
     }
 }

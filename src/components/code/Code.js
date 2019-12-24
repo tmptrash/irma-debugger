@@ -3,19 +3,29 @@ import './Code.scss';
 import Store from './../../Store';
 import {Actions} from './../../Actions';
 import Bytes2Code from 'irma/src/irma/Bytes2Code';
+import IrmaConfig from 'irma/src/Config';
 
 class Code extends React.Component {
   constructor() {
     super();
-    const state    = Store.getState();
-    this.state     = {code: state.code, line: 0};
+    this._oldCode  = IrmaConfig.LUCA[0].code;
+    this.state     = {code: Bytes2Code.toCode(this._oldCode, false, false, false, false), line: 0};
     this._map      = this._cmdMap();
     this._linesMap = {};
+    this._changed  = false;
   }
 
   componentDidMount() {
     this.unsubscribe = Store.subscribe(() => {
       const state = Store.getState();
+      //
+      // If LUCA code has changed, then we have to update Code component
+      // otherwise, it should store it's own code
+      //
+      if (!this._equal(this._oldCode, state.config.LUCA[0].code)) {
+        this._oldCode = state.config.LUCA[0].code.slice();
+        Store.dispatch(Actions.code(Bytes2Code.toCode(this._oldCode, false, false, false, false)));
+      }
       this.setState({code: state.code, line: state.line});
     });
   }
@@ -39,6 +49,17 @@ class Code extends React.Component {
     );
   }
 
+  _equal(code0, code1) {
+    if (code0.length !== code1.length) {return false}
+    for (let i = 0, len = code0.length; i < len; i++) {
+      if (code0[i] !== code1[i]) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
   _isValid() {
     if (this.state.code === '') {return true}
     const code = this.state.code.split('\n');
@@ -54,6 +75,7 @@ class Code extends React.Component {
 
   _onChange(e) {
     Store.dispatch(Actions.code(e.target.value));
+    this._changed = true;
   }
 
   _onScroll(e) {
