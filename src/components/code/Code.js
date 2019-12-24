@@ -13,6 +13,7 @@ class Code extends React.Component {
     this._map      = this._cmdMap();
     this._linesMap = {};
     this._changed  = false;
+    Store.dispatch(Actions.code(this.state.code));
   }
 
   componentDidMount() {
