@@ -8,7 +8,7 @@ import IrmaConfig from 'irma/src/Config';
 class Code extends React.Component {
   constructor() {
     super();
-    this._oldCode  = IrmaConfig.LUCA[0].code;
+    this._oldCode  = IrmaConfig.LUCAS[0].code;
     this.state     = {code: Bytes2Code.toCode(this._oldCode, false, false, false, false), line: 0};
     this._map      = this._cmdMap();
     this._linesMap = {};
@@ -22,8 +22,8 @@ class Code extends React.Component {
       // If LUCA code has changed, then we have to update Code component
       // otherwise, it should store it's own code
       //
-      if (!this._equal(this._oldCode, state.config.LUCA[0].code)) {
-        this._oldCode = state.config.LUCA[0].code.slice();
+      if (!this._equal(this._oldCode, IrmaConfig.LUCAS[0].code)) {
+        this._oldCode = state.config.LUCAS[0].code.slice();
         Store.dispatch(Actions.code(Bytes2Code.toCode(this._oldCode, false, false, false, false)));
       }
       this.setState({code: state.code, line: state.line});
