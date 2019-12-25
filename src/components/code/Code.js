@@ -36,13 +36,17 @@ class Code extends React.Component {
   componentWillUnmount() {this.unsubscribe()}
 
   componentDidUpdate() {
-    if (this.state.line !== this._line) {
-      const rootEl = ReactDOM.findDOMNode(this);
-      const lineEl = rootEl.querySelector('.line');
+    if (this.state.line === this._line) {return}
+
+    const rootEl = ReactDOM.findDOMNode(this);
+    const lineEl = rootEl.querySelector('.line');
+    const rowsEl = lineEl.parentNode;
+    const pos    = lineEl.offsetTop - rowsEl.scrollTop;
+    if (pos >= rowsEl.clientHeight || pos <= 0) {
       lineEl.scrollIntoView();
       rootEl.querySelector('textarea').scrollTop = lineEl.parentNode.scrollTop;
-      this._line = this.state.line;
     }
+    this._line = this.state.line;
   }
 
   render () {
