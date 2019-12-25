@@ -1,4 +1,5 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
 import './Code.scss';
 import Store from './../../Store';
 import {Actions} from './../../Actions';
@@ -13,6 +14,7 @@ class Code extends React.Component {
     this._map      = this._cmdMap();
     this._linesMap = {};
     this._changed  = false;
+    this._line     = 0;
     Store.dispatch(Actions.code(this.state.code));
   }
 
@@ -31,7 +33,17 @@ class Code extends React.Component {
     });
   }
 
-  componentWillUnmount() {this.unsubscrube()}
+  componentWillUnmount() {this.unsubscribe()}
+
+  componentDidUpdate() {
+    if (this.state.line !== this._line) {
+      const rootEl = ReactDOM.findDOMNode(this);
+      const lineEl = rootEl.querySelector('.line');
+      lineEl.scrollIntoView();
+      rootEl.querySelector('textarea').scrollTop = lineEl.parentNode.scrollTop;
+      this._line = this.state.line;
+    }
+  }
 
   render () {
     const validCls = this._isValid(this.state.code) ? '' : 'error';
