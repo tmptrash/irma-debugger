@@ -2,4 +2,12 @@
     width: 402px;
     margin-left: 10px;
     border: 2px solid #ccc;
+    padding-left: 10px;
+    text-align: left;
+    .mem {
+        overflow-wrap: break-word;
+        .active {
+            background-color: #ff7039;
+        }
+    }
 }
