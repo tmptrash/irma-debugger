@@ -9,8 +9,8 @@ class Buttons extends React.Component {
         return (
             <div className="buttons">
                 <button title="Step - F10" onClick={this._onStep.bind(this)}>Step</button>
-                <button title="Stop - F9">Stop</button>
-                <button title="Converts byte code to string code">2 Code</button>
+                <button disabled title="Stop - F9">Stop</button>
+                <button disabled title="Converts byte code to string code">2 Code</button>
             </div>
         );
     }
