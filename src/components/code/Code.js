@@ -9,11 +9,13 @@ import IrmaConfig from 'irma/src/Config';
 class Code extends React.Component {
   constructor() {
     super();
+    // TODO: refactor this to use separate reducers
     this._oldCode  = IrmaConfig.LUCAS[0].code;
     this.state     = {code: Bytes2Code.toCode(this._oldCode, false, false, false, false), line: 0};
     this._map      = this._cmdMap();
     this._linesMap = {};
     this._changed  = false;
+    // TODO: refactor this to use separate reducers
     this._line     = 0;
     Store.dispatch(Actions.code(this.state.code));
   }
