@@ -1,11 +1,41 @@
 .info {
-    width: 402px;
+    width: 504px;
     margin-left: 10px;
     border: 2px solid #ccc;
     padding-left: 10px;
     text-align: left;
+    font-family: monospace;
+    font-size: 15px;
+    .cols {
+        display: flex;
+        justify-content: space-between;
+    }
+    .regs, .probs, .mut {
+        display: flex;
+        flex-direction: column;
+        margin-top: 20px;
+        width: 120px;
+    }
+    .header {
+        font-size: 10px;
+        background-color: #efe;
+    }
+    .mut {
+        width: 160px;
+    }
     .mem {
         overflow-wrap: break-word;
+        display: flex;
+        flex-wrap: wrap;
+        .cell {
+            .header {
+                font-size: 9px;
+                background-color: #efe;
+            }
+            .val {
+                font-weight: 600;
+            }
+        }
         .active {
             background-color: #ff7039;
         }

@@ -7,126 +7,129 @@ import Bytes2Code from 'irma/src/irma/Bytes2Code';
 import IrmaConfig from 'irma/src/Config';
 
 class Code extends React.Component {
-  constructor() {
-    super();
-    // TODO: refactor this to use separate reducers
-    this._oldCode  = IrmaConfig.LUCAS[0].code;
-    this.state     = {code: Bytes2Code.toCode(this._oldCode, false, false, false, false), line: 0};
-    this._map      = this._cmdMap();
-    this._linesMap = {};
-    this._changed  = false;
-    // TODO: refactor this to use separate reducers
-    this._line     = 0;
-    Store.dispatch(Actions.code(this.state.code));
-  }
-
-  componentDidMount() {
-    this.unsubscribe = Store.subscribe(() => {
-      const state = Store.getState();
-      //
-      // If LUCA code has changed, then we have to update Code component
-      // otherwise, it should store it's own code
-      //
-      if (!this._equal(this._oldCode, IrmaConfig.LUCAS[0].code)) {
-        this._oldCode = state.config.LUCAS[0].code.slice();
-        Store.dispatch(Actions.code(Bytes2Code.toCode(this._oldCode, false, false, false, false)));
-      }
-      this.setState({code: state.code, line: state.line});
-    });
-  }
-
-  componentWillUnmount() {this.unsubscribe()}
-
-  componentDidUpdate() {
-    if (this.state.line === this._line) {return}
-
-    const rootEl = ReactDOM.findDOMNode(this);
-    const lineEl = rootEl.querySelector('.line');
-    const rowsEl = lineEl.parentNode;
-    const pos    = lineEl.offsetTop - rowsEl.scrollTop;
-    if (pos >= rowsEl.clientHeight || pos <= 0) {
-      lineEl.scrollIntoView();
-      rootEl.querySelector('textarea').scrollTop = lineEl.parentNode.scrollTop;
-    }
-    this._line = this.state.line;
-  }
-
-  render () {
-    const validCls = this._isValid(this.state.code) ? '' : 'error';
-    const onChange = this._onChange.bind(this);
-    const errMsg   = validCls ? 'Invalid code' : '';
-    const value    = this.state.code;
-    const onScroll = this._onScroll.bind(this);
-    const lines    = this._lines(value);
-    const curLine  = this.state.line;
-
-    return (
-      <div className="code">
-        <div className="rows">{lines.map((line,i) => <div key={i} className={lines[i] === curLine ? 'line' : ''}>{line}</div>)}</div>
-        <textarea title={errMsg} className={validCls} value={value} onChange={onChange} onScroll={onScroll}></textarea>
-      </div>
-    );
-  }
-
-  _equal(code0, code1) {
-    if (code0.length !== code1.length) {return false}
-    for (let i = 0, len = code0.length; i < len; i++) {
-      if (code0[i] !== code1[i]) {
-        return false;
-      }
+    constructor() {
+        super();
+        // TODO: refactor this to use separate reducers
+        this._oldCode  = IrmaConfig.LUCAS[0].code;
+        this.state     = {code: Bytes2Code.toCode(this._oldCode, false, false, false, false), line: 0};
+        this._map      = this._cmdMap();
+        this._linesMap = {};
+        this._changed  = false;
+        // TODO: refactor this to use separate reducers
+        this._line     = 0;
+        Store.dispatch(Actions.code(this.state.code));
     }
 
-    return true;
-  }
-
-  _isValid() {
-    if (this.state.code === '') {return true}
-    const code = this.state.code.split('\n');
-    const map  = this._map;
-
-    for (let i = 0, len = code.length; i < len; i++) {
-      const line = code[i].trim();
-      if (map[code[i]] === undefined && line[0] !== '#' && line !== '') {return false}
+    componentDidMount() {
+        this.unsubscribe = Store.subscribe(() => {
+            const state = Store.getState();
+            //
+            // If LUCA code has changed, then we have to update Code component
+            // otherwise, it should store it's own code
+            //
+            if (!this._equal(this._oldCode, IrmaConfig.LUCAS[0].code)) {
+                this._oldCode = state.config.LUCAS[0].code.slice();
+                Store.dispatch(Actions.code(Bytes2Code.toCode(this._oldCode, false, false, false, false)));
+            }
+            this.setState({code: state.code, line: state.line});
+        });
     }
 
-    return true;
-  }
+    componentWillUnmount() {this.unsubscribe()}
 
-  _onChange(e) {
-    Store.dispatch(Actions.code(e.target.value));
-    this._changed = true;
-  }
+    componentDidUpdate() {
+        if (this.state.line === this._line) {return}
 
-  _onScroll(e) {
-    const target = e.nativeEvent.target;
-    target.parentNode.firstChild.scrollTop = target.scrollTop;
-  }
-
-  _cmdMap() {
-    const map       = Bytes2Code.MAP;
-    const revertMap = {};
-    const keys      = Object.keys(map);
-
-    for (let i = 0, len = keys.length; i < len; i++) {
-      revertMap[map[keys[i]][0]] = +keys[i];
+        const rootEl = ReactDOM.findDOMNode(this);
+        const lineEl = rootEl.querySelector('.line');
+        const rowsEl = lineEl.parentNode;
+        const pos    = lineEl.offsetTop - rowsEl.scrollTop;
+        if (pos >= (rowsEl.clientHeight - 20) || pos <= 0) {
+            rootEl.querySelector('textarea').scrollTop = (lineEl.parentNode.scrollTop += (pos - 30));
+        }
+        this._line = this.state.line;
     }
 
-    return revertMap;
-  }
+    render () {
+        const validCls = this._isValid(this.state.code) ? '' : 'error';
+        const onChange = this._onChange.bind(this);
+        const errMsg   = validCls ? 'Invalid code' : '';
+        const value    = this.state.code;
+        const onScroll = this._onScroll.bind(this);
+        const lines    = this._lines(value);
+        const curLine  = this.state.line;
 
-  _lines(code) {
-    const splitted = code.split('\n');
-    const len      = splitted.length;
-    const lines    = new Array(len);
-    let   line     = -1;
-
-    for (let i = 0; i < len; i++) {
-      const ln = splitted[i].trim();
-      lines[i] = ln[0] === '#' || ln === '' ? '\u0000' : ++line;
+        return (
+            <div className="code">
+                <div className="rows">{lines.map((line,i) => <div key={i} className={lines[i] === curLine ? 'line' : ''}>{line}</div>)}</div>
+                <textarea title={errMsg} className={validCls} value={value} onChange={onChange} onScroll={onScroll}></textarea>
+            </div>
+        );
     }
 
-    return lines;
-  }
+    _equal(code0, code1) {
+        if (code0.length !== code1.length) {return false}
+        for (let i = 0, len = code0.length; i < len; i++) {
+            if (code0[i] !== code1[i]) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    _isValid() {
+        if (this.state.code === '') {return true}
+        const code = this.state.code.split('\n');
+        const map  = this._map;
+
+        for (let i = 0, len = code.length; i < len; i++) {
+            const line = code[i].trim();
+            if (map[line] === undefined && line[0] !== '#' && line !== '' && !this._isNumeric(line)) {return false}
+        }
+
+        return true;
+    }
+
+    _isNumeric(n) {
+        return !isNaN(parseFloat(n)) && isFinite(n);
+    }
+
+    _onChange(e) {
+        Store.dispatch(Actions.code(e.target.value));
+        this._changed = true;
+    }
+
+    _onScroll(e) {
+        const target = e.nativeEvent.target;
+        target.parentNode.firstChild.scrollTop = target.scrollTop;
+    }
+
+    _cmdMap() {
+        const map       = Bytes2Code.MAP;
+        const revertMap = {};
+        const keys      = Object.keys(map);
+
+        for (let i = 0, len = keys.length; i < len; i++) {
+            revertMap[map[keys[i]][0]] = +keys[i];
+        }
+
+        return revertMap;
+    }
+
+    _lines(code) {
+        const splitted = code.split('\n');
+        const len      = splitted.length;
+        const lines    = new Array(len);
+        let   line     = -1;
+
+        for (let i = 0; i < len; i++) {
+            const ln = splitted[i].trim();
+            lines[i] = ln[0] === '#' || ln === '' ? '\u0000' : ++line;
+        }
+
+        return lines;
+    }
 }
 
 export default Code;
