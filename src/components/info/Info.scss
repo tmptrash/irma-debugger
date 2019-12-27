@@ -10,18 +10,24 @@
         display: flex;
         justify-content: space-between;
     }
-    .regs, .probs, .mut {
+    .regs, .probs, .mut, .org {
         display: flex;
         flex-direction: column;
         margin-top: 20px;
-        width: 120px;
+        width: 110px;
     }
     .header {
         font-size: 10px;
         background-color: #efe;
     }
     .mut {
-        width: 160px;
+        width: 140px;
+    }
+    .regs {
+        width: 90px;
+    }
+    .probs {
+        width: 90px;
     }
     .mem {
         overflow-wrap: break-word;

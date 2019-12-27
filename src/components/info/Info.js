@@ -45,15 +45,24 @@ class Info extends React.Component {
                         <div>bx : {org.bx}</div>
                         <div>re : {org.re}</div>
                     </div>
+                    <div className="org">
+                        <div className="header">Organism:</div>
+                        <div>idx : {org.index}</div>
+                        <div>mIdx: {org.molIndex}</div>
+                        <div>offs: {org.offset}</div>
+                        <div>col : {org.color.toString(16)}</div>
+                        <div>nrg : {org.energy}</div>
+                        <div>mol : {org.mol}</div>
+                    </div>
                     <div className="probs">
                         <div className="header">Probabilities:</div>
                         {Array.from(org.probs).map((p, i) => <span key={i}>{Mutations.NAMES[i].padEnd(MEM_NUM_WIDTH)}: {p} </span>)}
                     </div>
                     <div className="mut">
                         <div className="header">Mutation:</div>
-                        <div className="period">period : {org.period}</div>
-                        <div className="percent">percent: {org.percent}</div>
-                        <div>{'age'.padEnd(MEM_NUM_WIDTH2, Constants.NUM_PAD)}: {org.age}</div>
+                        <div className="period">every: {org.period}</div>
+                        <div className="percent">{'%'.padEnd(MEM_NUM_WIDTH, Constants.NUM_PAD)} : {org.percent}</div>
+                        <div>{'age'.padEnd(MEM_NUM_WIDTH, Constants.NUM_PAD)} : {org.age}</div>
                     </div>
                 </div>
             </div>
