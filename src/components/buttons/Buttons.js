@@ -3,7 +3,6 @@ import './Buttons.scss';
 import {Actions} from './../../Actions';
 import BioVM from './../../BioVM';
 import Store from './../../Store';
-import IrmaConfig from 'irma/src/Config';
 
 class Buttons extends React.Component {
     render () {
@@ -24,12 +23,7 @@ class Buttons extends React.Component {
     }
 
     _onStop() {
-        const vm  = BioVM.getVM();
-        let   org = vm.orgs.get(0);
-        vm.delOrg(org);
-        org = vm.addOrg(0, IrmaConfig.LUCAS[0].code.slice(), 10000);
-        vm.world.canvas.update();
-        Store.dispatch(Actions.line(org.line));
+        BioVM.reset();
     }
 }
 

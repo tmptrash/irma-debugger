@@ -5,6 +5,7 @@ import Store from './../../Store';
 import {Actions} from './../../Actions';
 import Bytes2Code from 'irma/src/irma/Bytes2Code';
 import IrmaConfig from 'irma/src/Config';
+import BioVM from './../../BioVM';
 
 class Code extends React.Component {
     constructor() {
@@ -84,7 +85,7 @@ class Code extends React.Component {
         const map  = this._map;
 
         for (let i = 0, len = code.length; i < len; i++) {
-            const line = code[i].trim();
+            const line = code[i].split('#')[0].trim();
             if (map[line] === undefined && line[0] !== '#' && line !== '' && !this._isNumeric(line)) {return false}
         }
 
@@ -98,6 +99,7 @@ class Code extends React.Component {
     _onChange(e) {
         Store.dispatch(Actions.code(e.target.value));
         this._changed = true;
+        BioVM.reset();
     }
 
     _onScroll(e) {

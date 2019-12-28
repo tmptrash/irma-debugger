@@ -6,6 +6,7 @@
  * @author flatline
  */
 import Store from './Store';
+import {Actions} from './Actions';
 import IrmaConfig from 'irma/src/Config';
 //
 // This is small hack. We have to apply default config before it will be
@@ -16,6 +17,11 @@ import IrmaConfig from 'irma/src/Config';
 applyCfg();
 const BioVM = require('irma/src/irma/BioVM');
 
+/**
+ * Instance of BioVM
+ * @singleton
+ */
+let bioVM = null;
 /**
  * Applies default configuration instead typed in Config component.
  * These parameters must overwrite typed by user
@@ -39,17 +45,29 @@ function applyCfg() {
         PLUGINS              : []
     });
 }
-Store.subscribe(applyCfg);
 /**
- * Instance of BioVM
- * @singleton
+ * Returns VM instance singleton
  */
-let bioVM = null;
+function getVM () {
+    return bioVM || (bioVM = new BioVM());
+}
+/**
+ * Resets VM. After that code will be started from the beginning
+ */
+function reset() {
+    const vm  = getVM();
+    let   org = vm.orgs.get(0);
+    vm.delOrg(org);
+    org = vm.addOrg(0, IrmaConfig.LUCAS[0].code.slice(), 10000);
+    vm.world.canvas.update();
+    Store.dispatch(Actions.line(org.line));
+}
+
+Store.subscribe(applyCfg);
 /**
  * Creates BioVM instance as a singleton
  */
 export default {
-    getVM: () => {
-        return bioVM || (bioVM = new BioVM());
-    }
+    getVM,
+    reset
 }
