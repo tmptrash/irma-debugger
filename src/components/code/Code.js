@@ -10,9 +10,10 @@ import BioVM from './../../BioVM';
 class Code extends React.Component {
     constructor() {
         super();
+        const code = Store.getState().code;
         // TODO: refactor this to use separate reducers
-        this._oldCode  = IrmaConfig.LUCAS[0].code;
-        this.state     = {code: Bytes2Code.toCode(this._oldCode, false, false, false, false), line: 0};
+        this.state     = {code: !code ? Bytes2Code.toCode(IrmaConfig.LUCAS[0].code, false, false, false, false) : code, line: 0};
+        this._oldCode  = this.state.code;
         this._map      = this._cmdMap();
         this._linesMap = {};
         this._changed  = false;
@@ -28,9 +29,8 @@ class Code extends React.Component {
             // If LUCA code has changed, then we have to update Code component
             // otherwise, it should store it's own code
             //
-            if (!this._equal(this._oldCode, IrmaConfig.LUCAS[0].code)) {
-                this._oldCode = state.config.LUCAS[0].code.slice();
-                Store.dispatch(Actions.code(Bytes2Code.toCode(this._oldCode, false, false, false, false)));
+            if (this._oldCode !== state.code) {
+                Store.dispatch(Actions.code(this._oldCode = state.code));
             }
             this.setState({code: state.code, line: state.line});
         });
@@ -66,17 +66,6 @@ class Code extends React.Component {
                 <textarea title={errMsg} className={validCls} value={value} onChange={onChange} onScroll={onScroll}></textarea>
             </div>
         );
-    }
-
-    _equal(code0, code1) {
-        if (code0.length !== code1.length) {return false}
-        for (let i = 0, len = code0.length; i < len; i++) {
-            if (code0[i] !== code1[i]) {
-                return false;
-            }
-        }
-
-        return true;
     }
 
     _isValid() {

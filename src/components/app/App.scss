@@ -3,16 +3,17 @@
     display: flex;
     justify-content: center;
     .body {
-      width: 1070px;
       margin-top: 20px;
+      width: 1200px;
       display: flex;
       flex-direction: column;
       justify-content: left;
       .row0, .row1, .row2 {
         display: flex;
       }
-      .row1 {
-        height: 502px;
+      .ver {
+        margin-left: 20px;
+        font-weight: 600;
       }
       .row2 {
         margin-top: 10px;

@@ -11,10 +11,10 @@ function App() {
   return (
     <div className="app">
       <div className="body">
-        <h1>irma debugger v{Package.version}</h1>
         <div className="row0">
           <Config></Config>
           <World></World>
+          <div className="ver">irma debugger v{Package.version}</div>
         </div>
         <div className="row1">
           <Code></Code>

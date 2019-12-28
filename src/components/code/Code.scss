@@ -1,9 +1,8 @@
 .code {
-    height: 300px;
     display: flex;
     .rows {
         width: 56px;
-        height: 496px;
+        height: 556px;
         border: 2px solid #ccc;
         border-right: none;
         font-family: monospace;
@@ -19,11 +18,13 @@
         }
     }
     textarea {
-        height: 494px;
-        width: 338px;
+        height: 554px;
+        width: 538px;
         border: 2px solid #ccc;
         font-family: monospace;
         font-size: 14px;
+        white-space: nowrap;
+        overflow-x: hidden;
         &.error {
             border: 2px dashed red;
             outline: none;
