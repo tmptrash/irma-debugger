@@ -119,7 +119,7 @@ class Code extends React.Component {
     _lines(code) {
         const splitted = code.split('\n');
         const len      = splitted.length;
-        const lines    = new Array(len);
+        const lines    = new Array(len + 1);
         let   line     = -1;
 
         for (let i = 0; i < len; i++) {
@@ -131,6 +131,8 @@ class Code extends React.Component {
                 lines[i] = '\u0000';
             }
         }
+        lines[len] = ++line;
+        this._linesMap[line] = len;
 
         return lines;
     }
