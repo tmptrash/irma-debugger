@@ -1,12 +1,12 @@
 import React from 'react';
 import './Info.scss';
+import IrmaConfig from 'irma/src/Config'; 
 import BioVM from './../../BioVM'; 
 import Store from './../../Store';
 import Mutations from 'irma/src/irma/Mutations';
 import Constants from './../../Constants';
 
-const MEM_NUM_WIDTH  = 4;
-const MEM_NUM_WIDTH2 = 7;
+const MEM_NUM_WIDTH = 4;
 
 class Info extends React.Component {
     constructor() {
@@ -40,10 +40,11 @@ class Info extends React.Component {
                 {this._renderMem(org)}
                 <div className="cols">
                     <div className="regs">
-                        <div className="header">Registers:</div>
+                        <div className="header">Code:</div>
                         <div>ax : {org.ax}</div>
                         <div>bx : {org.bx}</div>
                         <div>re : {org.re}</div>
+                        {org.code[org.line] === IrmaConfig.CODE_CMDS.LOOP ? (<div>lp : {org.loops[org.line] || org.ax}</div>) : ''}
                     </div>
                     <div className="org">
                         <div className="header">Organism:</div>
