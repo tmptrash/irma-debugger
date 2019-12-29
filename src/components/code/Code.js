@@ -58,11 +58,12 @@ class Code extends React.Component {
         const value    = this.state.code;
         const onScroll = this._onScroll.bind(this);
         const lines    = this._lines(value);
+        const map      = this._linesMap;
         const curLine  = this.state.line;
 
         return (
             <div className="code">
-                <div className="rows">{lines.map((line,i) => <div key={i} className={lines[i] === curLine ? 'line' : ''}>{line}</div>)}</div>
+                <div className="rows">{lines.map((line,i) => <div key={i} className={map[i] === curLine ? 'line' : ''}>{line}</div>)}</div>
                 <textarea title={errMsg} className={validCls} value={value} onChange={onChange} onScroll={onScroll}></textarea>
             </div>
         );
@@ -116,7 +117,12 @@ class Code extends React.Component {
 
         for (let i = 0; i < len; i++) {
             const ln = splitted[i].trim();
-            lines[i] = ln[0] === '#' || ln === '' ? '\u0000' : ++line;
+            if (ln[0] !== '#' && ln !== '') {
+                this._linesMap[++line] = i;
+                lines[i] = line;
+            } else {
+                lines[i] = '\u0000';
+            }
         }
 
         return lines;
