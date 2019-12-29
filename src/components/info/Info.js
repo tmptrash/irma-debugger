@@ -50,7 +50,7 @@ class Info extends React.Component {
                         <div>idx : {org.index}</div>
                         <div>mIdx: {org.molIndex}</div>
                         <div>offs: {org.offset}</div>
-                        <div>col : {org.color.toString(16)}</div>
+                        <div>rgb : {org.color.toString(16)}</div>
                         <div>nrg : {org.energy}</div>
                         <div>mol : {org.mol}</div>
                     </div>

@@ -7,22 +7,28 @@ import Bytes2Code from 'irma/src/irma/Bytes2Code';
 import IrmaConfig from 'irma/src/Config';
 import BioVM from './../../BioVM';
 
+const CLS_LINE  = 'line';
+const CLS_ERROR = 'error';
+
 class Code extends React.Component {
     constructor() {
         super();
-        const code = Store.getState().code;
-        // TODO: refactor this to use separate reducers
-        this.state     = {code: !code ? Bytes2Code.toCode(IrmaConfig.LUCAS[0].code, false, false, false, false) : code, line: 0};
-        this._oldCode  = this.state.code;
+        const code     = Store.getState().code;
         this._map      = this._cmdMap();
+        const sCode    = !code ? Bytes2Code.toCode(IrmaConfig.LUCAS[0].code, false, false, false, false) : code;
+        const bCode    = this._getByteCode(sCode);
+        // TODO: refactor this to use separate reducers
+        this.state     = {code: sCode, bCode, line: 0};
+        this._oldCode  = this.state.code;
         this._linesMap = {};
         this._changed  = false;
         // TODO: refactor this to use separate reducers
         this._line     = 0;
-        Store.dispatch(Actions.code(this.state.code));
+        Store.dispatch(Actions.code(sCode, bCode));
     }
 
     componentDidMount() {
+        this._updateByteCode();
         this.unsubscribe = Store.subscribe(() => {
             const state = Store.getState();
             //
@@ -30,7 +36,8 @@ class Code extends React.Component {
             // otherwise, it should store it's own code
             //
             if (this._oldCode !== state.code) {
-                Store.dispatch(Actions.code(this._oldCode = state.code));
+                Store.dispatch(Actions.code(this._oldCode = state.code, this._getByteCode(state.code)));
+                this._updateByteCode();
             }
             this.setState({code: state.code, line: state.line});
         });
@@ -42,7 +49,7 @@ class Code extends React.Component {
         if (this.state.line === this._line) {return}
 
         const rootEl = ReactDOM.findDOMNode(this);
-        const lineEl = rootEl.querySelector('.line');
+        const lineEl = rootEl.querySelector(`.${CLS_LINE}`);
         const rowsEl = lineEl.parentNode;
         const pos    = lineEl.offsetTop - rowsEl.scrollTop;
         if (pos >= (rowsEl.clientHeight - 20) || pos <= 0) {
@@ -52,18 +59,18 @@ class Code extends React.Component {
     }
 
     render () {
-        const validCls = this._isValid(this.state.code) ? '' : 'error';
+        const validCls = this._isValid(this.state.code) ? '' : CLS_ERROR;
         const onChange = this._onChange.bind(this);
         const errMsg   = validCls ? 'Invalid code' : '';
         const value    = this.state.code;
         const onScroll = this._onScroll.bind(this);
         const lines    = this._lines(value);
         const map      = this._linesMap;
-        const curLine  = this.state.line;
+        const curLine  = map[this.state.line];
 
         return (
             <div className="code">
-                <div className="rows">{lines.map((line,i) => <div key={i} className={map[i] === curLine ? 'line' : ''}>{line}</div>)}</div>
+                <div className="rows">{lines.map((line,i) => <div key={i} className={i === curLine ? CLS_LINE : ''}>{line}</div>)}</div>
                 <textarea title={errMsg} className={validCls} value={value} onChange={onChange} onScroll={onScroll}></textarea>
             </div>
         );
@@ -87,7 +94,7 @@ class Code extends React.Component {
     }
 
     _onChange(e) {
-        Store.dispatch(Actions.code(e.target.value));
+        Store.dispatch(Actions.code(e.target.value, this._getByteCode(e.target.value)));
         this._changed = true;
         BioVM.reset();
     }
@@ -126,6 +133,26 @@ class Code extends React.Component {
         }
 
         return lines;
+    }
+
+    _getByteCode(code) {
+        const splitted = code.split('\n');
+        const len      = splitted.length;
+        const bСode    = [];
+
+        for (let i = 0; i < len; i++) {
+            const ln   = splitted[i].split('#')[0].trim();
+            const code = this._isNumeric(ln) ? +ln : this._map[ln];
+            code !== undefined && bСode.push(code);
+        }
+
+        return bСode;
+    }
+
+    _updateByteCode() {
+        const org = BioVM.getVM().orgs.get(0);
+        org.code  = Store.getState().bCode.slice();
+        org.compile();
     }
 }
 

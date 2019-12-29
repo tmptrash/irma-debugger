@@ -8,7 +8,7 @@ export default function Reducer(state, action) {
         case Constants.CONFIG:
             return Object.assign({}, state, {config: action.value});
         case Constants.CODE:
-            return Object.assign({}, state, {code: action.value});
+            return Object.assign({}, state, {code: action.value, bCode: action.value1});
             case Constants.LINE:
                 return Object.assign({}, state, {line: action.value});
         default:
