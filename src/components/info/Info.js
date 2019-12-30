@@ -6,7 +6,8 @@ import Store from './../../Store';
 import Mutations from 'irma/src/irma/Mutations';
 import Constants from './../../Constants';
 
-const MEM_NUM_WIDTH = 4;
+const PAD_WIDTH = 4;
+const PAD_SYM   = '\u0000';
 
 class Info extends React.Component {
     constructor() {
@@ -41,9 +42,12 @@ class Info extends React.Component {
                 <div className="cols">
                     <div className="regs">
                         <div className="header">Code:</div>
-                        <div>ax : {org.ax}</div>
-                        <div>bx : {org.bx}</div>
-                        <div>re : {org.re}</div>
+                        <div>{'ax'.padEnd(PAD_WIDTH, PAD_SYM)} : {org.ax}</div>
+                        <div>{'bx'.padEnd(PAD_WIDTH, PAD_SYM)} : {org.bx}</div>
+                        <div>{'re'.padEnd(PAD_WIDTH, PAD_SYM)} : {org.re}</div>
+                        <div>{'mol'.padEnd(PAD_WIDTH, PAD_SYM)} : {org.mol}</div>
+                        <div>{'read'.padEnd(PAD_WIDTH, PAD_SYM)} : {org.molRead}</div>
+                        <div>{'write'.padEnd(PAD_WIDTH, PAD_SYM)}: {org.molWrite}</div>
                         {org.code[org.line] === IrmaConfig.CODE_CMDS.LOOP ? (<div>lp : {org.loops[org.line] || org.ax}</div>) : ''}
                     </div>
                     <div className="org">
@@ -57,13 +61,13 @@ class Info extends React.Component {
                     </div>
                     <div className="probs">
                         <div className="header">Probabilities:</div>
-                        {Array.from(org.probs).map((p, i) => <span key={i}>{Mutations.NAMES[i].padEnd(MEM_NUM_WIDTH)}: {p} </span>)}
+                        {Array.from(org.probs).map((p, i) => <span key={i}>{Mutations.NAMES[i].padEnd(PAD_WIDTH)}: {p} </span>)}
                     </div>
                     <div className="mut">
                         <div className="header">Mutation:</div>
                         <div className="period">every: {org.period}</div>
-                        <div className="percent">{'%'.padEnd(MEM_NUM_WIDTH, Constants.NUM_PAD)} : {org.percent}</div>
-                        <div>{'age'.padEnd(MEM_NUM_WIDTH, Constants.NUM_PAD)} : {org.age}</div>
+                        <div className="percent">{'%'.padEnd(PAD_WIDTH, Constants.NUM_PAD)} : {org.percent}</div>
+                        <div>{'age'.padEnd(PAD_WIDTH, Constants.NUM_PAD)} : {org.age}</div>
                     </div>
                 </div>
             </div>
@@ -72,7 +76,7 @@ class Info extends React.Component {
 
     _renderMem(o) {
         const mem  = Array.from(o.mem);
-        const w    = MEM_NUM_WIDTH;
+        const w    = PAD_WIDTH;
         const p    = Constants.NUM_PAD;
         return (
             <div className="mem">
@@ -80,7 +84,7 @@ class Info extends React.Component {
                     mem.map((m, i) => {
                         return <div key={i} className="cell">
                             <div className="header">{i.toString().padEnd(w, p)}</div>
-                            <div className={o.memPos === i ? 'val active' : 'val'}>{m.toString().padEnd(MEM_NUM_WIDTH, Constants.NUM_PAD)} </div>
+                            <div className={o.memPos === i ? 'val active' : 'val'}>{m.toString().padEnd(PAD_WIDTH, Constants.NUM_PAD)} </div>
                         </div>
                     })
                 }

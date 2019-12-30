@@ -8,6 +8,7 @@ import IrmaConfig from 'irma/src/Config';
 import BioVM from './../../BioVM';
 
 const CLS_LINE  = 'line';
+const CLS_MOL   = 'mol';
 const CLS_ERROR = 'error';
 
 class Code extends React.Component {
@@ -21,6 +22,7 @@ class Code extends React.Component {
         this._oldCode  = this.state.code;
         this._linesMap = {};
         this._changed  = false;
+        this._rendered = false;
         // TODO: refactor this to use separate reducers
         this._line     = 0;
         Store.dispatch(Actions.code(sCode, bCode));
@@ -66,10 +68,18 @@ class Code extends React.Component {
         const lines    = this._lines(value);
         const map      = this._linesMap;
         const curLine  = map[this.state.line];
+        const mol      = lines[map[this._rendered ? BioVM.getVM().orgs.get(0).mol : 0]][1];
+
+        this._rendered = true;
 
         return (
             <div className="code">
-                <div className="rows">{lines.map((line,i) => <div key={i} className={i === curLine ? CLS_LINE : ''}>{line}</div>)}</div>
+                <div className="rows">
+                    {lines.map((line,i) => <div key={i} className="row">
+                        <div className={i === curLine ? CLS_LINE : ''}>{line[0]}</div>
+                        <div className={line[1] === mol ? CLS_MOL  : ''}>{line[1]}</div>
+                    </div>)}
+                </div>
                 <textarea title={errMsg} className={validCls} value={value} onChange={onChange} onScroll={onScroll}></textarea>
             </div>
         );
@@ -110,16 +120,20 @@ class Code extends React.Component {
         const len      = splitted.length;
         const lines    = new Array(len + 1);
         let   line     = -1;
+        let   mol      = 0;
 
         for (let i = 0; i < len; i++) {
+            const ln = lines[i] = new Array(2);
             if (Bytes2Code.byte(splitted[i]) === null) {
-                lines[i] = '\u0000';
+                ln[0] = '\u0000';
+                ln[1] = '\u0000';
             } else {
                 this._linesMap[++line] = i;
-                lines[i] = line;
+                ln[0] = line;
+                ln[1] = Bytes2Code.isMol(splitted[i]) ? mol++ : mol;
             }
         }
-        lines[len] = ++line;
+        lines[len] = [++line];
         this._linesMap[line] = len;
 
         return lines;
