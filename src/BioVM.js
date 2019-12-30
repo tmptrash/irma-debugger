@@ -58,7 +58,7 @@ function reset() {
     const vm  = getVM();
     let   org = vm.orgs.get(0);
     vm.delOrg(org);
-    org = vm.addOrg(0, IrmaConfig.LUCAS[0].code.slice(), 10000);
+    org = vm.addOrg(Math.floor(Math.random() * 100), Store.getState().bCode.slice(), 10000);
     vm.world.canvas.update();
     Store.dispatch(Actions.line(org.line));
 }
