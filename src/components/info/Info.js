@@ -48,7 +48,7 @@ class Info extends React.Component {
                         <div>{'mol'.padEnd(PAD_WIDTH, PAD_SYM)} : {org.mol}</div>
                         <div>{'read'.padEnd(PAD_WIDTH, PAD_SYM)} : {org.molRead}</div>
                         <div>{'write'.padEnd(PAD_WIDTH, PAD_SYM)}: {org.molWrite}</div>
-                        {org.code[org.line] === IrmaConfig.CODE_CMDS.LOOP ? (<div>lp : {org.loops[org.line] || org.ax}</div>) : ''}
+                        {org.code[org.line] === IrmaConfig.CODE_CMDS.LOOP ? (<div>loop : {org.loops[org.line] || org.ax}</div>) : ''}
                     </div>
                     <div className="org">
                         <div className="header">Organism:</div>
