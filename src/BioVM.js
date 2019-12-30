@@ -58,6 +58,7 @@ function reset() {
     const vm  = getVM();
     let   org = vm.orgs.get(0);
     vm.delOrg(org);
+    // TODO: on random position may be a molecule!
     org = vm.addOrg(Math.floor(Math.random() * 100), Store.getState().bCode.slice(), 10000);
     vm.world.canvas.update();
     Store.dispatch(Actions.line(org.line));
