@@ -14,9 +14,8 @@ class Code extends React.Component {
     constructor() {
         super();
         const code     = Store.getState().code;
-        this._map      = this._cmdMap();
         const sCode    = !code ? Bytes2Code.toCode(IrmaConfig.LUCAS[0].code, false, false, false, false) : code;
-        const bCode    = this._getByteCode(sCode);
+        const bCode    = Bytes2Code.toByteCode(sCode);
         // TODO: refactor this to use separate reducers
         this.state     = {code: sCode, bCode, line: 0};
         this._oldCode  = this.state.code;
@@ -36,7 +35,7 @@ class Code extends React.Component {
             // otherwise, it should store it's own code
             //
             if (this._oldCode !== state.code) {
-                Store.dispatch(Actions.code(this._oldCode = state.code, this._getByteCode(state.code)));
+                Store.dispatch(Actions.code(this._oldCode = state.code, Bytes2Code.toByteCode(state.code)));
                 this._updateByteCode();
             }
             this.setState({code: state.code, line: state.line});
@@ -76,14 +75,16 @@ class Code extends React.Component {
         );
     }
 
+    /**
+     * Makes string code validation
+     * @return {Boolean} Validation status
+     */
     _isValid() {
         if (this.state.code === '') {return true}
         const code = this.state.code.split('\n');
-        const map  = this._map;
 
         for (let i = 0, len = code.length; i < len; i++) {
-            const line = code[i].split('#')[0].trim();
-            if (map[line] === undefined && line[0] !== '#' && line !== '' && !this._isNumeric(line)) {return false}
+            if (!Bytes2Code.valid(code[i])) {return false}
         }
 
         return true;
@@ -94,7 +95,7 @@ class Code extends React.Component {
     }
 
     _onChange(e) {
-        Store.dispatch(Actions.code(e.target.value, this._getByteCode(e.target.value)));
+        Store.dispatch(Actions.code(e.target.value, Bytes2Code.toByteCode(e.target.value)));
         this._changed = true;
         BioVM.reset();
     }
@@ -104,18 +105,6 @@ class Code extends React.Component {
         target.parentNode.firstChild.scrollTop = target.scrollTop;
     }
 
-    _cmdMap() {
-        const map       = Bytes2Code.MAP;
-        const revertMap = {};
-        const keys      = Object.keys(map);
-
-        for (let i = 0, len = keys.length; i < len; i++) {
-            revertMap[map[keys[i]][0]] = +keys[i];
-        }
-
-        return revertMap;
-    }
-
     _lines(code) {
         const splitted = code.split('\n');
         const len      = splitted.length;
@@ -123,32 +112,17 @@ class Code extends React.Component {
         let   line     = -1;
 
         for (let i = 0; i < len; i++) {
-            const ln = splitted[i].trim();
-            if (ln[0] !== '#' && ln !== '') {
+            if (Bytes2Code.byte(splitted[i]) === null) {
+                lines[i] = '\u0000';
+            } else {
                 this._linesMap[++line] = i;
                 lines[i] = line;
-            } else {
-                lines[i] = '\u0000';
             }
         }
         lines[len] = ++line;
         this._linesMap[line] = len;
 
         return lines;
-    }
-
-    _getByteCode(code) {
-        const splitted = code.split('\n');
-        const len      = splitted.length;
-        const bСode    = [];
-
-        for (let i = 0; i < len; i++) {
-            const ln   = splitted[i].split('#')[0].trim();
-            const code = this._isNumeric(ln) ? +ln : this._map[ln];
-            code !== undefined && bСode.push(code);
-        }
-
-        return bСode;
     }
 
     _updateByteCode() {
