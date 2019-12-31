@@ -13,9 +13,10 @@ class Info extends React.Component {
     constructor() {
         super();
         // TODO: refactor this to use separate reducers
-        this._line  = 0;
-        this._debug = false;
-        this.state = {line: 0};
+        this._line     = 0;
+        this._debug    = false;
+        this._prevVals = {};
+        this.state     = {line: 0};
     }
 
     componentDidMount() {
@@ -31,6 +32,19 @@ class Info extends React.Component {
 
     componentWillUnmount() {this._unsubscribe()}
 
+    componentDidUpdate() {
+        if (!this._debug) {return}
+        const org = BioVM.getVM().orgs.get(0);
+        this._prevVals = Object.assign({}, {
+            ax : org.ax,
+            bx : org.bx,
+            re : org.re,
+            mol: org.mol,
+            molRead: org.molRead,
+            molWrite: org.molWrite
+        });
+    }
+
     render () {
         if (!this._debug) {return (<div className="info">Press "Step" to start debug</div>)}
 
@@ -40,14 +54,14 @@ class Info extends React.Component {
                 <div className="header">Memory:</div>
                 {this._renderMem(org)}
                 <div className="cols">
-                    <div className="regs">
+                    <div className="code">
                         <div className="header">Code:</div>
-                        <div>{'ax'.padEnd(PAD_WIDTH, PAD_SYM)} : {org.ax}</div>
-                        <div>{'bx'.padEnd(PAD_WIDTH, PAD_SYM)} : {org.bx}</div>
-                        <div>{'re'.padEnd(PAD_WIDTH, PAD_SYM)} : {org.re}</div>
-                        <div>{'mol'.padEnd(PAD_WIDTH, PAD_SYM)} : {org.mol}</div>
-                        <div>{'read'.padEnd(PAD_WIDTH, PAD_SYM)} : {org.molRead}</div>
-                        <div>{'write'.padEnd(PAD_WIDTH, PAD_SYM)}: {org.molWrite}</div>
+                        <div className={this._mark('ax', org)}>{'ax'.padEnd(PAD_WIDTH, PAD_SYM)} : {org.ax}</div>
+                        <div className={this._mark('bx', org)}>{'bx'.padEnd(PAD_WIDTH, PAD_SYM)} : {org.bx}</div>
+                        <div className={this._mark('re', org)}>{'re'.padEnd(PAD_WIDTH, PAD_SYM)} : {org.re}</div>
+                        <div className={this._mark('mol', org)}>{'mol'.padEnd(PAD_WIDTH, PAD_SYM)} : {org.mol}</div>
+                        <div className={this._mark('molRead', org)}>{'read'.padEnd(PAD_WIDTH, PAD_SYM)} : {org.molRead}</div>
+                        <div className={this._mark('molWrite', org)}>{'write'.padEnd(PAD_WIDTH, PAD_SYM)}: {org.molWrite}</div>
                         {org.code[org.line] === IrmaConfig.CODE_CMDS.LOOP ? (<div>loop : {org.loops[org.line] || org.ax}</div>) : ''}
                     </div>
                     <div className="org">
@@ -72,6 +86,10 @@ class Info extends React.Component {
                 </div>
             </div>
         );
+    }
+
+    _mark(name, org) {
+        return this._prevVals[name] !== org[name] ? 'marked' : '';
     }
 
     _renderMem(o) {
