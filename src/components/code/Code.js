@@ -21,8 +21,8 @@ class Code extends React.Component {
         this.state     = {code: sCode, bCode, line: 0};
         this._oldCode  = this.state.code;
         this._linesMap = {};
-        this._changed  = false;
         this._rendered = false;
+        this._changed  = false;
         // TODO: refactor this to use separate reducers
         this._line     = 0;
         Store.dispatch(Actions.code(sCode, bCode));
@@ -57,6 +57,7 @@ class Code extends React.Component {
             rootEl.querySelector('textarea').scrollTop = (lineEl.parentNode.scrollTop += (pos - 30));
         }
         this._line = this.state.line;
+        this._changed = false;
     }
 
     render () {
@@ -105,10 +106,10 @@ class Code extends React.Component {
     }
 
     _onChange(e) {
+        this._changed = true;
         const bCode = Bytes2Code.toByteCode(e.target.value);
         const code  = Bytes2Code.toCode(bCode, false, false, false, false);
         Store.dispatch(Actions.code(code, bCode));
-        this._changed = true;
         BioVM.reset();
     }
 
@@ -144,7 +145,7 @@ class Code extends React.Component {
     _updateByteCode() {
         const org = BioVM.getVM().orgs.get(0);
         org.code  = Store.getState().bCode.slice();
-        org.compile();
+        this._changed && org.compile();
     }
 }
 
