@@ -15,7 +15,7 @@ class Code extends React.Component {
     constructor() {
         super();
         const code     = Store.getState().code;
-        const sCode    = !code ? Bytes2Code.toCode(IrmaConfig.LUCAS[0].code, false, false, false, false) : code;
+        const sCode    = !code ? Bytes2Code.toCode(IrmaConfig.LUCAS[0].code, false, false, false, false) : Bytes2Code.toCode(Bytes2Code.toByteCode(code), false, false, false, false);
         const bCode    = Bytes2Code.toByteCode(sCode);
         // TODO: refactor this to use separate reducers
         this.state     = {code: sCode, bCode, line: 0};
@@ -105,7 +105,9 @@ class Code extends React.Component {
     }
 
     _onChange(e) {
-        Store.dispatch(Actions.code(e.target.value, Bytes2Code.toByteCode(e.target.value)));
+        const bCode = Bytes2Code.toByteCode(e.target.value);
+        const code  = Bytes2Code.toCode(bCode, false, false, false, false);
+        Store.dispatch(Actions.code(code, bCode));
         this._changed = true;
         BioVM.reset();
     }

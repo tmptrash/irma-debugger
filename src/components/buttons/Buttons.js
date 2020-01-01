@@ -3,6 +3,7 @@ import './Buttons.scss';
 import {Actions} from './../../Actions';
 import BioVM from './../../BioVM';
 import Store from './../../Store';
+import Bytes2Code from 'irma/src/irma/Bytes2Code';
 
 class Buttons extends React.Component {
     render () {
@@ -19,12 +20,16 @@ class Buttons extends React.Component {
         const vm = BioVM.getVM();
         vm.run();
         vm.world.canvas.update();
-        Store.dispatch(Actions.line(vm.orgs.get(0).line));
+        const org  = vm.orgs.get(0);
+        const code = Bytes2Code.toCode(org.code, false, false, false, false);
+        Store.dispatch(Actions.line(org.line));
+        Store.dispatch(Actions.code(code, org.code));
     }
 
     _onStop() {
         BioVM.reset();
     }
 }
+
 
 export default Buttons;
