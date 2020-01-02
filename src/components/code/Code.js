@@ -9,6 +9,8 @@ import BioVM from './../../BioVM';
 
 const CLS_LINE  = 'line';
 const CLS_MOL   = 'mol';
+const CLS_READ  = 'read';
+const CLS_WRITE = 'write';
 const CLS_ERROR = 'error';
 
 class Code extends React.Component {
@@ -69,7 +71,10 @@ class Code extends React.Component {
         const lines    = this._lines(value);
         const map      = this._linesMap;
         const curLine  = map[this.state.line];
-        const mol      = lines[map[this._rendered ? BioVM.getVM().orgs.get(0).mol : 0]][1];
+        const org      = this._rendered ? BioVM.getVM().orgs.get(0) : {};
+        const mol      = lines[map[org.mol      || 0]][1];
+        const molRead  = lines[map[org.molRead  || 0]][1];
+        const molWrite = lines[map[org.molWrite || 0]][1];
 
         this._rendered = true;
 
@@ -78,7 +83,7 @@ class Code extends React.Component {
                 <div className="rows">
                     {lines.map((line,i) => <div key={i} className="row">
                         <div className={i === curLine ? CLS_LINE : ''}>{line[0]}</div>
-                        <div className={line[1] === mol ? CLS_MOL  : ''}>{line[1]}</div>
+                        <div className={line[1] === molWrite ? CLS_WRITE  : (line[1] === molRead ? CLS_READ : (line[1] === mol ? CLS_MOL : ''))}>{line[1]}</div>
                     </div>)}
                 </div>
                 <textarea title={errMsg} className={validCls} value={value} onChange={onChange} onScroll={onScroll}></textarea>

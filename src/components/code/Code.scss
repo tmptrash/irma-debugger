@@ -2,7 +2,7 @@
     display: flex;
     .rows {
         width: 76px;
-        height: 556px;
+        height: 792px;
         border: 2px solid #ccc;
         border-right: none;
         font-family: monospace;
@@ -22,12 +22,18 @@
                 background-color: #ff7039;
             }
             .mol {
-                background-color: #d9d97d;
+                background-color: #8bd97d;
+            }
+            .read {
+                background-color: #f8ef8a;
+            }
+            .write {
+                background-color: #f67171;
             }
         }
     }
     textarea {
-        height: 554px;
+        height: 790px;
         width: 518px;
         border: 2px solid #ccc;
         font-family: monospace;
