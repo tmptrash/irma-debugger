@@ -28,6 +28,7 @@ class Code extends React.Component {
         this._rendered    = false;
         this._changed     = false;
         this._breakpoints = {};
+        this._run         = false;
         // TODO: refactor this to use separate reducers
         this._line        = 0;
         Store.dispatch(Actions.code(sCode, bCode));
@@ -46,6 +47,13 @@ class Code extends React.Component {
                 this._updateByteCode();
             }
             this.setState({code: state.code, line: state.line});
+            //
+            // Script has run
+            //
+            if (state.run && !this._run) {
+                this._run = true;
+                this._onRun();
+            }
         });
     }
 
@@ -75,9 +83,9 @@ class Code extends React.Component {
         const map      = this._linesMap;
         const curLine  = map[this.state.line];
         const org      = this._rendered ? BioVM.getVM().orgs.get(0) : {};
-        const mol      = lines[map[org.mol      || 0]][1];
-        const molRead  = lines[map[org.molRead  || 0]][1];
-        const molWrite = lines[map[org.molWrite || 0]][1];
+        const mol      = (lines[map[org.mol      || 0]] || [0,0])[1];
+        const molRead  = (lines[map[org.molRead  || 0]] || [0,0])[1];
+        const molWrite = (lines[map[org.molWrite || 0]] || [0,0])[1];
 
         this._rendered = true;
 
@@ -85,13 +93,39 @@ class Code extends React.Component {
             <div className="code">
                 <div className="rows">
                     {lines.map((line,i) => <div key={i} className="row" onClick={this._onBreakpoint.bind(this)}>
-                        <div className={i === curLine ? CLS_LINE + ' ' + CLS_ROW : CLS_ROW}>{line[0]}</div>
+                        <div className={this._onLine(i, line, curLine)}>{line[0]}</div>
                         <div className={line[1] === molWrite ? CLS_WRITE  : (line[1] === molRead ? CLS_READ : (line[1] === mol ? CLS_MOL : ''))}>{line[1]}</div>
                     </div>)}
                 </div>
                 <textarea title={errMsg} className={validCls} value={value} onChange={onChange} onScroll={onScroll}></textarea>
             </div>
         );
+    }
+
+    _onLine(i, line, curLine) {
+        let cls = '';
+        cls = (i === curLine ? CLS_LINE + ' ' + CLS_ROW : CLS_ROW);
+        if (this._breakpoints[line[1]]) {
+            cls += (' ' + CLS_BP);
+        }
+        return cls;
+    }
+
+    _onRun() {
+        const vm  = BioVM.getVM();
+        const org = vm.orgs.get(0);
+        vm.run();
+        vm.world.canvas.update();
+        const code = Bytes2Code.toCode(org.code, false, false, false, false);
+        Store.dispatch(Actions.iter(vm.iteration));
+        Store.dispatch(Actions.line(org.line));
+        Store.dispatch(Actions.code(code, org.code));
+        if (this._breakpoints[org.line] || !Store.getState().run) {
+            Store.dispatch(Actions.run(false));
+            this._run = false;
+            return;
+        }
+        setTimeout(this._onRun.bind(this), 0);
     }
 
     _onBreakpoint(event) {

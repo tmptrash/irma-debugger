@@ -9,5 +9,6 @@ export default {
     CONFIG : 0,
     CODE   : 1,
     LINE   : 2,
-    RUNNING: 3
+    RUN    : 3,
+    ITER   : 4
 };

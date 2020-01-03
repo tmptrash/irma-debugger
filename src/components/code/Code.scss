@@ -2,7 +2,7 @@
     display: flex;
     .rows {
         width: 76px;
-        height: 792px;
+        height: 722px;
         border: 2px solid #ccc;
         border-right: none;
         font-family: monospace;
@@ -36,12 +36,12 @@
         }
         .bp {
             background-color: #0000cc;
-            border-top-right-radius: 8px;
-            border-bottom-right-radius: 8px;
+            border-top-right-radius: 9px;
+            border-bottom-right-radius: 9px;
         }
     }
     textarea {
-        height: 790px;
+        height: 720px;
         width: 518px;
         border: 2px solid #ccc;
         font-family: monospace;
