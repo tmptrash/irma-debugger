@@ -7,6 +7,8 @@ import Bytes2Code from 'irma/src/irma/Bytes2Code';
 import IrmaConfig from 'irma/src/Config';
 import BioVM from './../../BioVM';
 
+const CLS_BP    = 'bp';
+const CLS_ROW   = 'ln';
 const CLS_LINE  = 'line';
 const CLS_MOL   = 'mol';
 const CLS_READ  = 'read';
@@ -16,17 +18,18 @@ const CLS_ERROR = 'error';
 class Code extends React.Component {
     constructor() {
         super();
-        const code     = Store.getState().code;
-        const sCode    = !code ? Bytes2Code.toCode(IrmaConfig.LUCAS[0].code, false, false, false, false) : Bytes2Code.toCode(Bytes2Code.toByteCode(code), false, false, false, false);
-        const bCode    = Bytes2Code.toByteCode(sCode);
+        const code        = Store.getState().code;
+        const sCode       = !code ? Bytes2Code.toCode(IrmaConfig.LUCAS[0].code, false, false, false, false) : Bytes2Code.toCode(Bytes2Code.toByteCode(code), false, false, false, false);
+        const bCode       = Bytes2Code.toByteCode(sCode);
         // TODO: refactor this to use separate reducers
-        this.state     = {code: sCode, bCode, line: 0};
-        this._oldCode  = this.state.code;
-        this._linesMap = {};
-        this._rendered = false;
-        this._changed  = false;
+        this.state        = {code: sCode, bCode, line: 0};
+        this._oldCode     = this.state.code;
+        this._linesMap    = {};
+        this._rendered    = false;
+        this._changed     = false;
+        this._breakpoints = {};
         // TODO: refactor this to use separate reducers
-        this._line     = 0;
+        this._line        = 0;
         Store.dispatch(Actions.code(sCode, bCode));
     }
 
@@ -81,14 +84,27 @@ class Code extends React.Component {
         return (
             <div className="code">
                 <div className="rows">
-                    {lines.map((line,i) => <div key={i} className="row">
-                        <div className={i === curLine ? CLS_LINE : ''}>{line[0]}</div>
+                    {lines.map((line,i) => <div key={i} className="row" onClick={this._onBreakpoint.bind(this)}>
+                        <div className={i === curLine ? CLS_LINE + ' ' + CLS_ROW : CLS_ROW}>{line[0]}</div>
                         <div className={line[1] === molWrite ? CLS_WRITE  : (line[1] === molRead ? CLS_READ : (line[1] === mol ? CLS_MOL : ''))}>{line[1]}</div>
                     </div>)}
                 </div>
                 <textarea title={errMsg} className={validCls} value={value} onChange={onChange} onScroll={onScroll}></textarea>
             </div>
         );
+    }
+
+    _onBreakpoint(event) {
+        if (event.target.className.indexOf(CLS_ROW) !== -1) {
+            const line = +event.target.innerText;
+            if (this._breakpoints[line] === undefined) {
+                this._breakpoints[line] = true;
+                event.target.className += (' ' + CLS_BP);
+            } else {
+                delete this._breakpoints[line];
+                event.target.className = CLS_ROW;
+            }
+        }
     }
 
     /**

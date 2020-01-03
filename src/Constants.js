@@ -8,5 +8,6 @@ export default {
     NUM_PAD: '\u0000',
     CONFIG : 0,
     CODE   : 1,
-    LINE   : 2
+    LINE   : 2,
+    RUNNING: 3
 };

@@ -30,6 +30,14 @@
             .write {
                 background-color: #f67171;
             }
+            .ln {
+                cursor: pointer;
+            }
+        }
+        .bp {
+            background-color: #0000cc;
+            border-top-right-radius: 8px;
+            border-bottom-right-radius: 8px;
         }
     }
     textarea {

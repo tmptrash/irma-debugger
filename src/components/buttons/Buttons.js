@@ -10,6 +10,7 @@ class Buttons extends React.Component {
         return (
             <div className="buttons">
                 <button title="Step - F10" onClick={this._onStep.bind(this)}>Step</button>
+                <button title="Run - F8" onClick={this._onRun.bind(this)}>Run</button>
                 <button title="Stop - F9" onClick={this._onStop.bind(this)}>Stop</button>
                 <button disabled title="Converts byte code to string code">2 Code</button>
             </div>
@@ -17,13 +18,19 @@ class Buttons extends React.Component {
     }
 
     _onStep() {
-        const vm = BioVM.getVM();
+        const vm   = BioVM.getVM();
         vm.run();
         vm.world.canvas.update();
         const org  = vm.orgs.get(0);
         const code = Bytes2Code.toCode(org.code, false, false, false, false);
         Store.dispatch(Actions.line(org.line));
         Store.dispatch(Actions.code(code, org.code));
+    }
+
+    _onRun() {
+        this._onStep();
+        const vm  = BioVM.getVM();
+        const org = vm.orgs.get(0);
     }
 
     _onStop() {

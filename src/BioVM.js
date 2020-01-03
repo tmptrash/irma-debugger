@@ -44,6 +44,14 @@ function applyCfg() {
         molAmount            : 5,
         PLUGINS              : []
     });
+    IrmaConfig.DIR[0] = -IrmaConfig.WORLD_WIDTH;
+    IrmaConfig.DIR[1] = -IrmaConfig.WORLD_WIDTH + 1;
+    IrmaConfig.DIR[2] = 1;
+    IrmaConfig.DIR[3] = IrmaConfig.WORLD_WIDTH + 1;
+    IrmaConfig.DIR[4] = IrmaConfig.WORLD_WIDTH;
+    IrmaConfig.DIR[5] = IrmaConfig.WORLD_WIDTH - 1;
+    IrmaConfig.DIR[6] = -1;
+    IrmaConfig.DIR[7] = -IrmaConfig.WORLD_WIDTH - 1;
 }
 /**
  * Returns VM instance singleton
