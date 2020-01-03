@@ -10,5 +10,6 @@ export default {
     CODE   : 1,
     LINE   : 2,
     RUN    : 3,
-    ITER   : 4
+    ITER   : 4,
+    VIS    : 5
 };

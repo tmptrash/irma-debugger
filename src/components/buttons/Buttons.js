@@ -29,11 +29,15 @@ class Buttons extends React.Component {
             <div className="buttons">
                 <button title="Step - F10" onClick={this._onStep.bind(this)}>Step</button>
                 <button title="Run - F8" onClick={this._onRun.bind(this)}>Run</button>
-                <button title="Stop - F9" onClick={this._onStop.bind(this)}>Stop</button>
-                <button disabled title="Converts byte code to string code">2 Code</button>
-                <span>{this.state.iter}</span>
+                <button title="Compile - F9" onClick={this._onCompile.bind(this)}>Compile</button>
+                <label>Visualize:<input type="checkbox" value="Visualize" onChange={this._onVisualize.bind(this)}></input></label>
+                <span> Iteration: {this.state.iter}</span>
             </div>
         );
+    }
+
+    _onVisualize(event) {
+        Store.dispatch(Actions.visualize(event.target.checked));
     }
 
     _onStep() {
@@ -52,7 +56,7 @@ class Buttons extends React.Component {
         Store.dispatch(Actions.run(true));
     }
 
-    _onStop() {
+    _onCompile() {
         BioVM.reset();
     }
 }

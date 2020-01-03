@@ -15,6 +15,9 @@ export default function Reducer(state, action) {
             return Object.assign({}, state, {run: action.value});
         case Constants.ITER:
             return Object.assign({}, state, {iter: action.value});
+        case Constants.VIS:
+            return Object.assign({}, state, {visualize: action.value});
+            
         default:
             return state;
     }

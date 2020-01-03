@@ -29,6 +29,7 @@ class Code extends React.Component {
         this._changed     = false;
         this._breakpoints = {};
         this._run         = false;
+        this._visualize   = false;
         // TODO: refactor this to use separate reducers
         this._line        = 0;
         Store.dispatch(Actions.code(sCode, bCode));
@@ -44,9 +45,12 @@ class Code extends React.Component {
             //
             if (this._oldCode !== state.code) {
                 Store.dispatch(Actions.code(this._oldCode = state.code, Bytes2Code.toByteCode(state.code)));
+                this.setState({code: Store.getState().code});
                 this._updateByteCode();
             }
-            this.setState({code: state.code, line: state.line});
+            if (this._line !== Store.getState().line) {
+                this.setState({line: this._line = Store.getState().line});
+            }
             //
             // Script has run
             //
@@ -54,6 +58,7 @@ class Code extends React.Component {
                 this._run = true;
                 this._onRun();
             }
+            this._visualize = state.visualize;
         });
     }
 
@@ -115,12 +120,19 @@ class Code extends React.Component {
         const vm  = BioVM.getVM();
         const org = vm.orgs.get(0);
         vm.run();
-        vm.world.canvas.update();
-        const code = Bytes2Code.toCode(org.code, false, false, false, false);
         Store.dispatch(Actions.iter(vm.iteration));
-        Store.dispatch(Actions.line(org.line));
-        Store.dispatch(Actions.code(code, org.code));
+        if (this._visualize) {
+            vm.world.canvas.update();
+            const code = Bytes2Code.toCode(org.code, false, false, false, false);
+            Store.dispatch(Actions.line(org.line));
+            Store.dispatch(Actions.code(code, org.code));
+        }
         if (this._breakpoints[org.line] || !Store.getState().run) {
+            vm.world.canvas.update();
+            const code = Bytes2Code.toCode(org.code, false, false, false, false);
+            Store.dispatch(Actions.iter(vm.iteration));
+            Store.dispatch(Actions.line(org.line));
+            Store.dispatch(Actions.code(code, org.code));
             Store.dispatch(Actions.run(false));
             this._run = false;
             return;
