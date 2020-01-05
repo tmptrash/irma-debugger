@@ -11,7 +11,6 @@ const CLS_BP    = 'bp';
 const CLS_ROW   = 'ln';
 const CLS_LINE  = 'line';
 const CLS_MOL   = 'mol';
-const CLS_READ  = 'read';
 const CLS_WRITE = 'write';
 const CLS_ERROR = 'error';
 
@@ -36,7 +35,7 @@ class Code extends React.Component {
     }
 
     componentDidMount() {
-        this._updateByteCode();
+        this._updateByteCode(true);
         this.unsubscribe = Store.subscribe(() => {
             const state = Store.getState();
             //
@@ -46,11 +45,9 @@ class Code extends React.Component {
             if (this._oldCode !== state.code) {
                 Store.dispatch(Actions.code(this._oldCode = state.code, Bytes2Code.toByteCode(state.code)));
                 this.setState({code: Store.getState().code});
-                this._updateByteCode();
+                this._updateByteCode(this._changed);
             }
-            if (this._line !== Store.getState().line) {
-                this.setState({line: this._line = Store.getState().line});
-            }
+            this.setState({line: Store.getState().line});
             //
             // Script has run
             //
@@ -89,7 +86,6 @@ class Code extends React.Component {
         const curLine  = map[this.state.line];
         const org      = this._rendered ? BioVM.getVM().orgs.get(0) : {};
         const mol      = (lines[map[org.mol      || 0]] || [0,0])[1];
-        const molRead  = (lines[map[org.molRead  || 0]] || [0,0])[1];
         const molWrite = (lines[map[org.molWrite || 0]] || [0,0])[1];
 
         this._rendered = true;
@@ -99,7 +95,7 @@ class Code extends React.Component {
                 <div className="rows">
                     {lines.map((line,i) => <div key={i} className="row" onClick={this._onBreakpoint.bind(this)}>
                         <div className={this._onLine(i, line, curLine)}>{line[0]}</div>
-                        <div className={line[1] === molWrite ? CLS_WRITE  : (line[1] === molRead ? CLS_READ : (line[1] === mol ? CLS_MOL : ''))}>{line[1]}</div>
+                        <div className={line[1] === molWrite ? CLS_WRITE  : (line[1] === mol ? CLS_MOL : '')}>{line[1]}</div>
                     </div>)}
                 </div>
                 <textarea title={errMsg} className={validCls} value={value} onChange={onChange} onScroll={onScroll}></textarea>
@@ -209,10 +205,10 @@ class Code extends React.Component {
         return lines;
     }
 
-    _updateByteCode() {
+    _updateByteCode(changed) {
         const org = BioVM.getVM().orgs.get(0);
         org.code  = Store.getState().bCode.slice();
-        this._changed && org.compile();
+        changed && org.compile();
     }
 }
 

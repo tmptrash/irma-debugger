@@ -40,7 +40,6 @@ class Info extends React.Component {
             bx : org.bx,
             re : org.re,
             mol: org.mol,
-            molRead: org.molRead,
             molWrite: org.molWrite
         });
     }
@@ -60,7 +59,6 @@ class Info extends React.Component {
                         <div className={this._mark('bx', org)}>{'bx'.padEnd(PAD_WIDTH, PAD_SYM)} : {org.bx}</div>
                         <div className={this._mark('re', org)}>{'re'.padEnd(PAD_WIDTH, PAD_SYM)} : {org.re}</div>
                         <div className={this._mark('mol', org)}>{'mol'.padEnd(PAD_WIDTH, PAD_SYM)} : {org.mol}</div>
-                        <div className={this._mark('molRead', org)}>{'read'.padEnd(PAD_WIDTH, PAD_SYM)} : {org.molRead}</div>
                         <div className={this._mark('molWrite', org)}>{'write'.padEnd(PAD_WIDTH, PAD_SYM)}: {org.molWrite}</div>
                         {org.code[org.line] === IrmaConfig.CODE_CMDS.LOOP ? (<div>loop : {org.loops[org.line] || org.ax}</div>) : ''}
                     </div>
