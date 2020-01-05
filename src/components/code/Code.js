@@ -106,7 +106,7 @@ class Code extends React.Component {
     _onLine(i, line, curLine) {
         let cls = '';
         cls = (i === curLine ? CLS_LINE + ' ' + CLS_ROW : CLS_ROW);
-        if (this._breakpoints[line[1]]) {
+        if (this._breakpoints[line[0]]) {
             cls += (' ' + CLS_BP);
         }
         return cls;
