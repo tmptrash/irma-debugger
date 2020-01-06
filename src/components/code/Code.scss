@@ -27,15 +27,18 @@
             .line {
                 background-color: $active;
                 border-radius: $border-radius;
+                color: $black-color;
             }
             .mol {
                 background-color: #8BC34A;
+                color: $black-color;
             }
             .read {
                 background-color: #f8ef8a;
             }
             .write {
                 background-color: #e78989;
+                color: $black-color;
             }
             .ln {
                 cursor: pointer;
@@ -45,6 +48,7 @@
             background-color: #3F51B5;
             border-top-right-radius: 9px;
             border-bottom-right-radius: 9px;
+            color: $black-color;
         }
     }
     textarea {
