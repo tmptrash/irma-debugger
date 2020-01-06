@@ -1,9 +1,13 @@
+@import './../../Common.scss';
+
 .code {
     display: flex;
+    background-color: #d1d1d1;
+    border-radius: $border-radius;
     .rows {
         width: 76px;
         height: 662px;
-        border: 2px solid #ccc;
+        border: 2px solid #383838;
         border-right: none;
         font-family: monospace;
         font-size: 14px;
@@ -13,29 +17,32 @@
         overflow: hidden;
         color: #888;
         position: relative;
+        border-top-left-radius: $border-radius;
+        border-bottom-left-radius: $border-radius;
         .row {
             display: flex;
             div {
                 width: 100%;
             }
             .line {
-                background-color: #ff7039;
+                background-color: $active;
+                border-radius: $border-radius;
             }
             .mol {
-                background-color: #8bd97d;
+                background-color: #8BC34A;
             }
             .read {
                 background-color: #f8ef8a;
             }
             .write {
-                background-color: #f67171;
+                background-color: #FF5722;
             }
             .ln {
                 cursor: pointer;
             }
         }
         .bp {
-            background-color: #0000cc;
+            background-color: #3F51B5;
             border-top-right-radius: 9px;
             border-bottom-right-radius: 9px;
         }
@@ -43,11 +50,13 @@
     textarea {
         height: 660px;
         width: 518px;
-        border: 2px solid #ccc;
+        border: 2px solid $border-color;
         font-family: monospace;
         font-size: 14px;
         white-space: nowrap;
         overflow-x: hidden;
+        border-top-right-radius: $border-radius;
+        border-bottom-right-radius: $border-radius;
         &.error {
             border: 2px dashed red;
             outline: none;

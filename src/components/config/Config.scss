@@ -1,3 +1,5 @@
+@import './../../Common.scss';
+
 .config {
     height: 200px;
     display: flex;
@@ -5,7 +7,8 @@
     textarea {
         height: 196px;
         width: 600px;
-        border: 2px solid #ccc;
+        border: 2px solid $border-color;
+        border-radius: 4px;
         &.error {
             border: 2px dashed red;
             outline: none;

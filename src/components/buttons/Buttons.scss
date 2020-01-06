@@ -1,5 +1,9 @@
+@import './../../Common.scss';
+
 .buttons {
     button {
         margin-right: 10px;
+        border-radius: $border-radius;
+        border-color: $border-color;
     }
 }
