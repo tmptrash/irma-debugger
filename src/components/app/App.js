@@ -14,7 +14,7 @@ function App() {
         <div className="row0">
           <Config></Config>
           <World></World>
-          <div className="ver">irma debugger v{Package.version}</div>
+          <div className="ver">irma-dbg v{Package.version}</div>
         </div>
         <div className="row1">
           <Code></Code>
