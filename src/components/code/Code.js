@@ -95,7 +95,7 @@ class Code extends React.Component {
                 <div className="rows">
                     {lines.map((line,i) => <div key={i} className="row" onClick={this._onBreakpoint.bind(this)}>
                         <div className={this._onLine(i, line, curLine)}>{line[0]}</div>
-                        <div className={line[1] === molWrite ? CLS_WRITE  : (line[1] === mol ? CLS_MOL : '')}>{line[1]}</div>
+                        <div className={line[1] === molWrite ? CLS_WRITE  : (line[1] === mol ? CLS_MOL : '')} title={line[1] === molWrite ? 'write head' : (line[1] === mol ? 'molecule head' : '')}>{line[1]}</div>
                     </div>)}
                 </div>
                 <textarea title={errMsg} className={validCls} value={value} onChange={onChange} onScroll={onScroll}></textarea>
