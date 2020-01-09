@@ -30,7 +30,7 @@ class Buttons extends React.Component {
                 <button title="Step - F10" onClick={this._onStep.bind(this)}>Step</button>
                 <button title="Run - F8" onClick={this._onRun.bind(this)}>Run</button>
                 <button title="Compile - F9" onClick={this._onCompile.bind(this)}>Compile</button>
-                <label>Visualize:<input type="checkbox" value="Visualize" onChange={this._onVisualize.bind(this)}></input></label>
+                <label>Visualize:<input type="checkbox" value="Visualize" onChange={this._onVisualize.bind(this)} checked={Store.getState().visualize}></input></label>
                 <span> Iteration: {this.state.iter}</span>
             </div>
         );
