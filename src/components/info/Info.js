@@ -100,7 +100,7 @@ class Info extends React.Component {
                     mem.map((m, i) => {
                         return <div key={i} className="cell">
                             <div className="header">{i.toString().padEnd(w, p)}</div>
-                            <div className={o.memPos === i ? 'val active' : 'val'}>{m.toString().padEnd(PAD_WIDTH, Constants.NUM_PAD)} </div>
+                            <div className={o.mPos === i ? 'val active' : 'val'}>{m.toString().padEnd(PAD_WIDTH, Constants.NUM_PAD)} </div>
                         </div>
                     })
                 }
