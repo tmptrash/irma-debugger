@@ -41,6 +41,9 @@ $background-color: #00BCD4;
     .code {
         width: 90px;
         background-color: $background-color;
+        .loop {
+            font-weight: 600;
+        }
     }
     .probs {
         width: 90px;
