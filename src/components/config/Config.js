@@ -22,7 +22,7 @@ class Config extends React.Component {
     });
   }
 
-  componentWillUnmount() {this.unsubscrube()}
+  componentWillUnmount() {this.unsubscribe()}
 
   render() {
     const validCls = this._isValid(this.state.config) ? '' : 'error';

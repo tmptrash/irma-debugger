@@ -1,7 +1,10 @@
+@import './../../Common.scss';
+
 .world {
     width: 200px;
     height: 200px;
-    border: 1px solid #ccc;
+    border: 2px solid $border-color;
     margin-left: 10px;
     image-rendering: pixelated;
+    border-radius: 4px;
 }

@@ -44,6 +44,14 @@ function applyCfg() {
         molAmount            : 5,
         PLUGINS              : []
     });
+    IrmaConfig.DIR[0] = -IrmaConfig.WORLD_WIDTH;
+    IrmaConfig.DIR[1] = -IrmaConfig.WORLD_WIDTH + 1;
+    IrmaConfig.DIR[2] = 1;
+    IrmaConfig.DIR[3] = IrmaConfig.WORLD_WIDTH + 1;
+    IrmaConfig.DIR[4] = IrmaConfig.WORLD_WIDTH;
+    IrmaConfig.DIR[5] = IrmaConfig.WORLD_WIDTH - 1;
+    IrmaConfig.DIR[6] = -1;
+    IrmaConfig.DIR[7] = -IrmaConfig.WORLD_WIDTH - 1;
 }
 /**
  * Returns VM instance singleton
@@ -58,7 +66,8 @@ function reset() {
     const vm  = getVM();
     let   org = vm.orgs.get(0);
     vm.delOrg(org);
-    org = vm.addOrg(0, IrmaConfig.LUCAS[0].code.slice(), 10000);
+    // TODO: on random position may be a molecule!
+    org = vm.addOrg(Math.floor(Math.random() * 100), Store.getState().bCode.slice(), 600000);
     vm.world.canvas.update();
     Store.dispatch(Actions.line(org.line));
 }

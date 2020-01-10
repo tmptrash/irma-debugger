@@ -1,30 +1,46 @@
+@import './../../Common.scss';
+
+$background-color: #00BCD4;
+
 .info {
     width: 604px;
     margin-left: 10px;
-    border: 2px solid #ccc;
+    border: 2px solid #383838;
     padding-left: 10px;
     text-align: left;
     font-family: monospace;
     font-size: 15px;
+    background-color: $background-color;
+    border-radius: $border-radius;
     .cols {
         display: flex;
         justify-content: space-between;
     }
-    .regs, .probs, .mut, .org {
+    .code, .probs, .mut, .org {
         display: flex;
         flex-direction: column;
         margin-top: 20px;
         width: 110px;
+        .marked {
+            font-weight: 600;
+        }
+    }
+    .org {
+        width: 130px;
     }
     .header {
         font-size: 10px;
-        background-color: #efe;
+        background-color: #009688;
+        padding-left: 3px;
+        border-top-left-radius: 4px;
+        border-bottom-left-radius: 4px;
     }
     .mut {
         width: 140px;
     }
-    .regs {
+    .code {
         width: 90px;
+        background-color: $background-color;
     }
     .probs {
         width: 90px;
@@ -36,14 +52,17 @@
         .cell {
             .header {
                 font-size: 9px;
-                background-color: #efe;
+                background-color: $background-color;
+                padding-left: 0;
+                color: #795548;
             }
             .val {
                 font-weight: 600;
             }
         }
         .active {
-            background-color: #ff7039;
+            background-color: $active;
+            border-radius: 5px;
         }
     }
 }
