@@ -60,7 +60,7 @@ class Info extends React.Component {
                         <div className={this._mark('re', org)}>{'re'.padEnd(PAD_WIDTH, PAD_SYM)} : {org.re}</div>
                         <div className={this._mark('mol', org)}>{'mol'.padEnd(PAD_WIDTH, PAD_SYM)} : {org.mol}</div>
                         <div className={this._mark('molWrite', org)}>{'write'.padEnd(PAD_WIDTH, PAD_SYM)}: {org.molWrite}</div>
-                        {org.code[org.line] === IrmaConfig.CODE_CMDS.LOOP ? (<div class="loop">loop : {org.loops[org.line] || org.ax}</div>) : ''}
+                        {org.code[org.line] === IrmaConfig.CODE_CMDS.LOOP ? (<div className="loop">loop : {org.loops[org.line] || org.ax}</div>) : ''}
                     </div>
                     <div className="org">
                         <div className="header">Organism:</div>
