@@ -67,7 +67,7 @@ function reset() {
     let   org = vm.orgs.get(0);
     vm.delOrg(org);
     // TODO: on random position may be a molecule!
-    org = vm.addOrg(Math.floor(Math.random() * 100), Store.getState().bCode.slice(), 600000);
+    org = vm.addOrg(null, Math.floor(Math.random() * 100), Store.getState().bCode.slice(), IrmaConfig.energyOrg);
     vm.world.canvas.update();
     Store.dispatch(Actions.line(org.line));
 }
