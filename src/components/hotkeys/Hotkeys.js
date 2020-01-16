@@ -1,23 +1,35 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 const keymap = {}
 
 class Hotkeys extends React.Component {
-    handlerBinded = false
+    _handlerBinded = false
 
     componentDidMount() {
-        if (!this.handlerBinded) {
-            document.addEventListener('keydown', this.handleKeyDown);
-            this.handlerBinded = true;
+        if (!this._handlerBinded) {
+            document.addEventListener('keydown', this._handleKeydown);
+            this._handlerBinded = true;
         }
 
-        keymap[this.props.hotkey] = this.props.action
+        if (typeof this.props.hotkey === "string" && typeof this.props.action === "function") {
+            if (!(keymap[this.props.hotkey] instanceof Array)) {
+                keymap[this.props.hotkey] = [];
+            }
+            keymap[this.props.hotkey].push(this.props.action);
+        }
     }
 
-    handleKeyDown(e) {
-        e.preventDefault();
-        if (keymap[e.key]) {
-            keymap[e.key]();
+    componentWillUnmount() {
+        document.removeEventListener('keydown', this._handleKeydown);
+    }
+
+    _handleKeydown(e) {
+        if (keymap[e.key] instanceof Array) {
+            e.preventDefault();
+            keymap[e.key].forEach(function (action) {
+                action();
+            });
         }
     }
 
@@ -28,6 +40,11 @@ class Hotkeys extends React.Component {
             </React.Fragment>
         )
     }
+}
+
+Hotkeys.propTypes = {
+    hotkey: PropTypes.string.isRequired,
+    action: PropTypes.func.isRequired
 }
 
 export default Hotkeys;
