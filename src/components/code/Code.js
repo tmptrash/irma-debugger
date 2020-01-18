@@ -93,7 +93,6 @@ class Code extends React.Component {
         const onChange = this._onChange.bind(this);
         const errMsg   = validCls ? 'Invalid code' : '';
         const value    = this.state.code;
-        const onScroll = this._onScroll.bind(this);
         const lines    = this._lines(value);
         const map      = this._linesMap;
         const curLine  = map[this.state.line];
@@ -102,7 +101,8 @@ class Code extends React.Component {
         const molWrite = (lines[map[org.molWrite || 0]] || [0,0])[1];
         const options  = {
             selectOnLineNumbers: true,
-            lineNumbers: 'off'
+            lineNumbers: 'off',
+            scrollBeyondLastLine: false
           };
 
         this._rendered = true;
@@ -211,11 +211,6 @@ class Code extends React.Component {
         const code  = Bytes2Code.toCode(bCode, false, false, false, false);
         Store.dispatch(Actions.code(code, bCode));
         BioVM.reset();
-    }
-
-    _onScroll(e) {
-        const target = e.nativeEvent.target;
-        target.parentNode.firstChild.scrollTop = target.scrollTop;
     }
 
     _lines(code) {
