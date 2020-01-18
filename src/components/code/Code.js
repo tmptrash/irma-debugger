@@ -1,6 +1,14 @@
+/**
+ * Module, which is responsible for code editor
+ * 
+ * @author flatline
+ */
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './Code.scss';
+import {ControlledEditor} from '@monaco-editor/react';
+import { monaco } from '@monaco-editor/react';
+import Monaco from './Monaco';
 import Store from './../../Store';
 import {Actions} from './../../Actions';
 import Bytes2Code from 'irma/src/irma/Bytes2Code';
@@ -32,6 +40,10 @@ class Code extends React.Component {
         // TODO: refactor this to use separate reducers
         this._line        = 0;
         Store.dispatch(Actions.code(sCode, bCode));
+        // 
+        // Line language configuration
+        //
+        monaco.init().then(Monaco.init);
     }
 
     componentDidMount() {
@@ -87,6 +99,9 @@ class Code extends React.Component {
         const org      = this._rendered ? BioVM.getVM().orgs.get(0) : {};
         const mol      = (lines[map[org.mol      || 0]] || [0,0])[1];
         const molWrite = (lines[map[org.molWrite || 0]] || [0,0])[1];
+        const options  = {
+            selectOnLineNumbers: true
+          };
 
         this._rendered = true;
 
@@ -99,8 +114,21 @@ class Code extends React.Component {
                     </div>)}
                 </div>
                 <textarea title={errMsg} className={validCls} value={value} onChange={onChange} onScroll={onScroll}></textarea>
+                <ControlledEditor
+                    width="400px"
+                    height="600px"
+                    language="line"
+                    theme="lineTheme"
+                    value={value}
+                    options={options}
+                    onChange={this.onChange}
+                />
             </div>
         );
+    }
+
+    onChange(newValue, e) {
+        console.log('onChange', newValue, e);
     }
 
     _onLine(i, line, curLine) {
