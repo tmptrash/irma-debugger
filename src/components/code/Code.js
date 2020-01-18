@@ -1,5 +1,6 @@
 /**
- * Module, which is responsible for code editor
+ * Module, which is responsible for code editor based on very powerful Monaco editor 
+ * component.
  * 
  * @author flatline
  */
@@ -100,7 +101,8 @@ class Code extends React.Component {
         const mol      = (lines[map[org.mol      || 0]] || [0,0])[1];
         const molWrite = (lines[map[org.molWrite || 0]] || [0,0])[1];
         const options  = {
-            selectOnLineNumbers: true
+            selectOnLineNumbers: true,
+            lineNumbers: 'off'
           };
 
         this._rendered = true;
@@ -113,7 +115,7 @@ class Code extends React.Component {
                         <div className={line[1] === molWrite ? CLS_WRITE  : (line[1] === mol ? CLS_MOL : '')} title={line[1] === molWrite ? 'write head' : (line[1] === mol ? 'molecule head' : '')}>{line[1]}</div>
                     </div>)}
                 </div>
-                <textarea title={errMsg} className={validCls} value={value} onChange={onChange} onScroll={onScroll}></textarea>
+                {/* <textarea title={errMsg} className={validCls} value={value} onChange={onChange} onScroll={onScroll}></textarea> */}
                 <ControlledEditor
                     width="400px"
                     height="600px"
@@ -122,9 +124,16 @@ class Code extends React.Component {
                     value={value}
                     options={options}
                     onChange={this.onChange}
+                    editorDidMount={this.editorDidMount.bind(this)}
                 />
             </div>
         );
+    }
+
+    editorDidMount(_, editor) {
+        editor.onDidScrollChange((e, n) => {
+            ReactDOM.findDOMNode(this).querySelector('.rows').scrollTop = e.scrollTop;
+        });
     }
 
     onChange(newValue, e) {
