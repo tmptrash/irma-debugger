@@ -1,9 +1,10 @@
 @import './../../Common.scss';
 
-$background-color: #00BCD4;
+$background-color: #1e1e1e;
 
 .info {
     width: 604px;
+    height: 663px;
     margin-left: 10px;
     border: 2px solid #383838;
     padding-left: 10px;
@@ -13,6 +14,7 @@ $background-color: #00BCD4;
     background-color: $background-color;
     border-radius: $border-radius;
     overflow: hidden;
+    color: $green-color;
     .cols {
         display: flex;
         justify-content: space-between;
@@ -31,10 +33,11 @@ $background-color: #00BCD4;
     }
     .header {
         font-size: 10px;
-        background-color: #009688;
+        background-color: #282828;
         padding-left: 3px;
         border-top-left-radius: 4px;
         border-bottom-left-radius: 4px;
+        color: $orange-color;
     }
     .mut {
         width: 140px;
@@ -58,10 +61,9 @@ $background-color: #00BCD4;
                 font-size: 9px;
                 background-color: $background-color;
                 padding-left: 0;
-                color: #795548;
+                color: rgba(155, 185, 85, 0.2);
             }
             .val {
-                font-weight: 600;
             }
         }
         .active {
