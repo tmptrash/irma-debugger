@@ -16,8 +16,8 @@ class Monaco {
             keywordsBio  : ['join','split','step','see','say','listen','nread','get','put','offs','color','anab','catab','mol','mmol','smol','rmol','lmol','cmol','mcmp','w2mol','mol2w','find','reax'],
             tokenizer: {
                 root: [
+                    [/\s*\d+/, "line-num"],
                     [/[a-z0-9]+/, {cases: {'@keywordsCore': "line-core", '@keywordsBio': "line-bio", '@keywordsBlock': "line-block"}}],
-                    [/\s*[\d]+/, "line-num"],
                     [/\s*#.*/, "line-comment"],
                     [/@\s*[a-zA-Z_\$][\w\$]*/, 'line-ann']
                 ]
