@@ -2,14 +2,17 @@
 
 .code {
     display: flex;
-    background-color: #d1d1d1;
+    background-color: $back-color;
     border-radius: $border-radius;
     height: 666px;
+    section {
+        border: 2px solid $border-color;
+    }
     .rows {
         width: 76px;
         height: 662px;
-        border: 2px solid #383838;
-        border-right: none;
+        border: 2px solid $border-color;
+        border-right: solid 1px #303030;
         font-family: monospace;
         font-size: 14px;
         text-align: left;
@@ -27,19 +30,19 @@
                 height: 19px;
             }
             .line {
-                background-color: $active;
+                background-color: $orange-color;
                 border-radius: $border-radius;
                 color: $black-color;
             }
             .mol {
-                background-color: #8BC34A;
+                background-color: #FFEB3B;
                 color: $black-color;
             }
             .read {
                 background-color: #f8ef8a;
             }
             .write {
-                background-color: #e78989;
+                background-color: #4CAF50;
                 color: $black-color;
             }
             .ln {

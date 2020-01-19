@@ -1,17 +1,15 @@
 @import './../../Common.scss';
 
-$background-color: #1e1e1e;
-
 .info {
     width: 604px;
     height: 663px;
     margin-left: 10px;
-    border: 2px solid #383838;
+    border: 2px solid $border-color;
     padding-left: 10px;
     text-align: left;
     font-family: monospace;
     font-size: 15px;
-    background-color: $background-color;
+    background-color: $back-color;
     border-radius: $border-radius;
     overflow: hidden;
     color: $green-color;
@@ -44,7 +42,7 @@ $background-color: #1e1e1e;
     }
     .code {
         width: 90px;
-        background-color: $background-color;
+        background-color: $back-color;
         .loop {
             font-weight: 600;
         }
@@ -59,7 +57,7 @@ $background-color: #1e1e1e;
         .cell {
             .header {
                 font-size: 9px;
-                background-color: $background-color;
+                background-color: $back-color;
                 padding-left: 0;
                 color: rgba(155, 185, 85, 0.2);
             }
