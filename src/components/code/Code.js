@@ -38,6 +38,7 @@ class Code extends React.Component {
         this._breakpoints = {};
         this._run         = false;
         this._visualize   = false;
+        this._editor      = null;
         // TODO: refactor this to use separate reducers
         this._line        = 0;
         Store.dispatch(Actions.code(sCode, bCode));
@@ -81,8 +82,8 @@ class Code extends React.Component {
         const lineEl = rootEl.querySelector(`.${CLS_LINE}`);
         const rowsEl = lineEl.parentNode;
         const pos    = lineEl.offsetTop - rowsEl.scrollTop;
-        if (pos >= (rowsEl.clientHeight - 20) || pos <= 0) {
-            rootEl.querySelector('textarea').scrollTop = (lineEl.parentNode.scrollTop += (pos - 30));
+        if ((pos >= (rowsEl.clientHeight - 20) || pos <= 0) && this._editor) {
+            this._editor.setScrollPosition({scrollTop: lineEl.parentNode.scrollTop += (pos - 30)});
         }
         this._line = this.state.line;
         this._changed = false;
@@ -131,6 +132,7 @@ class Code extends React.Component {
     }
 
     editorDidMount(_, editor) {
+        this._editor = editor;
         editor.onDidScrollChange((e, n) => {
             ReactDOM.findDOMNode(this).querySelector('.rows').scrollTop = e.scrollTop;
         });
