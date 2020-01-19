@@ -118,7 +118,7 @@ class Code extends React.Component {
                 {/* <textarea title={errMsg} className={validCls} value={value} onChange={onChange} onScroll={onScroll}></textarea> */}
                 <ControlledEditor
                     width="400px"
-                    height="668px"
+                    height="666px"
                     language="line"
                     theme="lineTheme"
                     value={value}
