@@ -3,6 +3,7 @@ import './Buttons.scss';
 import {Actions} from './../../Actions';
 import BioVM from './../../BioVM';
 import Store from './../../Store';
+import Helpers from './../../common/Helpers';
 import Bytes2Code from 'irma/src/irma/Bytes2Code';
 
 class Buttons extends React.Component {
@@ -41,14 +42,15 @@ class Buttons extends React.Component {
     }
 
     _onStep() {
-        const vm   = BioVM.getVM();
+        const vm      = BioVM.getVM();
+        const org     = vm.orgs.get(0);
+        const oldCode = org.code.slice();
         vm.run();
         vm.world.canvas.update();
-        const org  = vm.orgs.get(0);
-        const code = Bytes2Code.toCode(org.code, false, false, false, false);
+        const code    = Bytes2Code.toCode(org.code, false, false, false, false);
         Store.dispatch(Actions.iter(vm.iteration));
         Store.dispatch(Actions.line(org.line));
-        Store.dispatch(Actions.code(code, org.code));
+        !Helpers.compare(oldCode, org.code) && Store.dispatch(Actions.code(code, org.code));
         Store.dispatch(Actions.run(false));
     }
 

@@ -27,7 +27,7 @@ class Code extends React.Component {
     constructor() {
         super();
         const code        = Store.getState().code;
-        const sCode       = !code ? Bytes2Code.toCode(IrmaConfig.LUCAS[0].code, false, false, false, false) : Bytes2Code.toCode(Bytes2Code.toByteCode(code), false, false, false, false);
+        const sCode       = !code ? IrmaConfig.LUCAS[0].code : code;
         const bCode       = Bytes2Code.toByteCode(sCode);
         // TODO: refactor this to use separate reducers
         this.state        = {code: sCode, bCode, line: 0};
@@ -43,7 +43,7 @@ class Code extends React.Component {
         this._line        = 0;
         Store.dispatch(Actions.code(sCode, bCode));
         // 
-        // Line language configuration
+        // Configuration of line language for Monaco editor
         //
         monaco.init().then(Monaco.init);
     }
