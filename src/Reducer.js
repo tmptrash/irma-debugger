@@ -6,17 +6,17 @@ export default function Reducer(state, action) {
         // Configuration has changed
         //
         case Constants.CONFIG:
-            return Object.assign({}, state, {config: action.value});
+            return Object.assign({}, state, {type: action.type, config: action.value});
         case Constants.CODE:
-            return Object.assign({}, state, {code: action.value, bCode: action.value1.slice()});
+            return Object.assign({}, state, {type: action.type, code: action.value, bCode: action.value1.slice()});
         case Constants.LINE:
-            return Object.assign({}, state, {line: action.value});
+            return Object.assign({}, state, {type: action.type, line: action.value});
         case Constants.RUN:
-            return Object.assign({}, state, {run: action.value});
+            return Object.assign({}, state, {type: action.type, run: action.value});
         case Constants.ITER:
-            return Object.assign({}, state, {iter: action.value});
+            return Object.assign({}, state, {type: action.type, iter: action.value});
         case Constants.VIS:
-            return Object.assign({}, state, {visualize: action.value});
+            return Object.assign({}, state, {type: action.type, visualize: action.value});
             
         default:
             return state;

@@ -10,6 +10,8 @@ import './Code.scss';
 import {ControlledEditor} from '@monaco-editor/react';
 import { monaco } from '@monaco-editor/react';
 import Monaco from './Monaco';
+import Constants from './../../Constants';
+import Helpers from './../../common/Helpers';
 import Store from './../../Store';
 import {Actions} from './../../Actions';
 import Bytes2Code from 'irma/src/irma/Bytes2Code';
@@ -29,17 +31,15 @@ class Code extends React.Component {
         const code        = Store.getState().code;
         const sCode       = !code ? IrmaConfig.LUCAS[0].code : code;
         const bCode       = Bytes2Code.toByteCode(sCode);
-        // TODO: refactor this to use separate reducers
+        // TODO: refactor this to use separate reducer
         this.state        = {code: sCode, bCode, line: 0};
-        this._oldCode     = this.state.code;
         this._linesMap    = {};
         this._rendered    = false;
-        this._changed     = false;
         this._breakpoints = {};
         this._run         = false;
         this._visualize   = false;
         this._editor      = null;
-        // TODO: refactor this to use separate reducers
+        // TODO: refactor this to use separate reducer
         this._line        = 0;
         Store.dispatch(Actions.code(sCode, bCode));
         // 
@@ -49,49 +49,36 @@ class Code extends React.Component {
     }
 
     componentDidMount() {
-        this._updateByteCode(true);
-        this.unsubscribe = Store.subscribe(() => {
+        this._updateByteCode();
+        this._unsubscribe = Store.subscribe(() => {
             const state = Store.getState();
-            //
-            // If LUCA code has changed, then we have to update Code component
-            // otherwise, it should store it's own code
-            //
-            if (this._oldCode !== state.code) {
-                Store.dispatch(Actions.code(this._oldCode = state.code, Bytes2Code.toByteCode(state.code)));
-                this.setState({code: Store.getState().code});
-                this._updateByteCode(this._changed);
-            }
-            this.setState({line: Store.getState().line});
-            //
-            // Script has run
-            //
-            if (state.run && !this._run) {
-                this._run = true;
-                this._onRun();
-            }
+            switch (state.type) {
+                case Constants.CODE: this.setState({code: Store.getState().code}); break;
+                case Constants.LINE: this.setState({line: Store.getState().line}); break;
+                case Constants.RUN : this._onRunUpdate(); break;
+                default: break;
+            }           
             this._visualize = state.visualize;
         });
     }
 
-    componentWillUnmount() {this.unsubscribe()}
+    componentWillUnmount() {this._unsubscribe()}
 
     componentDidUpdate() {
         if (this.state.line === this._line) {return}
 
-        const rootEl = ReactDOM.findDOMNode(this);
-        const lineEl = rootEl.querySelector(`.${CLS_LINE}`);
-        const rowsEl = lineEl.parentNode;
-        const pos    = lineEl.offsetTop - rowsEl.scrollTop;
+        const rootEl  = ReactDOM.findDOMNode(this);
+        const lineEl  = rootEl.querySelector(`.${CLS_LINE}`);
+        const rowsEl  = lineEl.parentNode;
+        const pos     = lineEl.offsetTop - rowsEl.scrollTop;
         if ((pos >= (rowsEl.clientHeight - 20) || pos <= 0) && this._editor) {
             this._editor.setScrollPosition({scrollTop: lineEl.parentNode.scrollTop += (pos - 30)});
         }
-        this._line = this.state.line;
-        this._changed = false;
+        this._line    = this.state.line;
     }
 
     render () {
         const validCls = this._isValid(this.state.code) ? '' : CLS_ERROR;
-        const onChange = this._onChange.bind(this);
         const errMsg   = validCls ? 'Invalid code' : '';
         const value    = this.state.code;
         const lines    = this._lines(value);
@@ -116,7 +103,6 @@ class Code extends React.Component {
                         <div className={line[1] === molWrite ? CLS_WRITE  : (line[1] === mol ? CLS_MOL : '')} title={line[1] === molWrite ? 'write head' : (line[1] === mol ? 'molecule head' : '')}>{line[1]}</div>
                     </div>)}
                 </div>
-                {/* <textarea title={errMsg} className={validCls} value={value} onChange={onChange} onScroll={onScroll}></textarea> */}
                 <ControlledEditor
                     width="700px"
                     height="662px"
@@ -124,7 +110,7 @@ class Code extends React.Component {
                     theme="lineTheme"
                     value={value}
                     options={options}
-                    onChange={this.onChange}
+                    onChange={this._onChange.bind(this)}
                     editorDidMount={this.editorDidMount.bind(this)}
                 />
             </div>
@@ -138,8 +124,11 @@ class Code extends React.Component {
         });
     }
 
-    onChange(newValue, e) {
-        console.log('onChange', newValue, e);
+    _onRunUpdate() {
+        if (Store.getState().run && !this._run) {
+            this._run = true;
+            this._onRun();
+        }
     }
 
     _onLine(i, line, curLine) {
@@ -207,11 +196,10 @@ class Code extends React.Component {
         return !isNaN(parseFloat(n)) && isFinite(n);
     }
 
-    _onChange(e) {
-        this._changed = true;
-        const bCode = Bytes2Code.toByteCode(e.target.value);
-        const code  = Bytes2Code.toCode(bCode, false, false, false, false);
-        Store.dispatch(Actions.code(code, bCode));
+    _onChange(newValue, e) {
+        const oldCode = BioVM.getVM().orgs.get(0).code.slice();
+        const bCode   = Bytes2Code.toByteCode(newValue);
+        !Helpers.compare(oldCode, bCode) && Store.dispatch(Actions.code(Bytes2Code.toCode(bCode, false, false, false, false), bCode));
         BioVM.reset();
     }
 
@@ -239,10 +227,10 @@ class Code extends React.Component {
         return lines;
     }
 
-    _updateByteCode(changed) {
+    _updateByteCode() {
         const org = BioVM.getVM().orgs.get(0);
         org.code  = Store.getState().bCode.slice();
-        changed && org.compile();
+        org.compile();
     }
 }
 

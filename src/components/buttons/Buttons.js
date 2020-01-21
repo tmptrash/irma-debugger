@@ -47,10 +47,9 @@ class Buttons extends React.Component {
         const oldCode = org.code.slice();
         vm.run();
         vm.world.canvas.update();
-        const code    = Bytes2Code.toCode(org.code, false, false, false, false);
         Store.dispatch(Actions.iter(vm.iteration));
         Store.dispatch(Actions.line(org.line));
-        !Helpers.compare(oldCode, org.code) && Store.dispatch(Actions.code(code, org.code));
+        !Helpers.compare(oldCode, org.code) && Store.dispatch(Actions.code(Bytes2Code.toCode(org.code, false, false, false, false), org.code));
         Store.dispatch(Actions.run(false));
     }
 
