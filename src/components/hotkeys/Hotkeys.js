@@ -1,23 +1,28 @@
+/**
+ * Hotkeys support.
+ * Hotkeys listed in keymap property as a key => value storage,
+ * where storage is an array of functions.
+ * @author zostum
+ */
+
 import React from 'react';
 import PropTypes from 'prop-types';
 
 const keymap = {}
 
 class Hotkeys extends React.Component {
-    _handlerBinded = false
+
+    constructor() {
+        super();
+        document.addEventListener('keydown', this._handleKeydown);
+    }
 
     componentDidMount() {
-        if (!this._handlerBinded) {
-            document.addEventListener('keydown', this._handleKeydown);
-            this._handlerBinded = true;
-        }
-
-        if (typeof this.props.hotkey === "string" && typeof this.props.action === "function") {
-            if (!(keymap[this.props.hotkey] instanceof Array)) {
-                keymap[this.props.hotkey] = [];
-            }
-            keymap[this.props.hotkey].push(this.props.action);
-        }
+        const hotkey = this.props.hotkey;
+        const action = this.props.action;
+        if (typeof hotkey !== 'string' || typeof action !== 'function') { return }
+        if (!Array.isArray(keymap[hotkey])) { keymap[hotkey] = [] }
+        keymap[hotkey].push(action);
     }
 
     componentWillUnmount() {
@@ -25,12 +30,9 @@ class Hotkeys extends React.Component {
     }
 
     _handleKeydown(e) {
-        if (keymap[e.key] instanceof Array) {
-            e.preventDefault();
-            keymap[e.key].forEach(function (action) {
-                action();
-            });
-        }
+        if (!Array.isArray(keymap[e.key])) { return }
+        e.preventDefault();
+        keymap[e.key].forEach((action) => action());
     }
 
     render() {
