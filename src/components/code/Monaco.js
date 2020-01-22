@@ -36,6 +36,14 @@ class Monaco {
             ]
         });
     }
+
+    static getOptions() {
+        return {
+            selectOnLineNumbers: true,
+            lineNumbers: 'off',
+            scrollBeyondLastLine: false
+        };
+    }
 }
 
 module.exports = Monaco;

@@ -28,58 +28,43 @@ const CLS_ERROR = 'error';
 class Code extends React.Component {
     constructor() {
         super();
-        const code        = Store.getState().code;
-        const sCode       = !code ? IrmaConfig.LUCAS[0].code : code;
-        const bCode       = Bytes2Code.toByteCode(sCode);
-        // TODO: refactor this to use separate reducer
-        this.state        = {code: sCode, bCode, line: 0};
+        const code        = !Store.getState().code ? IrmaConfig.LUCAS[0].code : Store.getState().code;
+        const bCode       = Bytes2Code.toByteCode(code);
+        this.state        = {code, bCode, line: 0};
+
         this._linesMap    = {};
         this._rendered    = false;
         this._breakpoints = {};
         this._run         = false;
         this._visualize   = false;
         this._editor      = null;
-        // TODO: refactor this to use separate reducer
         this._line        = 0;
-        Store.dispatch(Actions.code(sCode, bCode));
-        // 
-        // Configuration of line language for Monaco editor
-        //
+
+        Store.dispatch(Actions.code(code, bCode));
         monaco.init().then(Monaco.init);
     }
 
     componentDidMount() {
-        this._updateByteCode();
-        this._unsubscribe = Store.subscribe(() => {
-            const state = Store.getState();
-            switch (state.type) {
-                case Constants.CODE: this.setState({code: Store.getState().code}); break;
-                case Constants.LINE: this.setState({line: Store.getState().line}); break;
-                case Constants.RUN : this._onRunUpdate(); break;
-                default: break;
-            }           
-            this._visualize = state.visualize;
-        });
+        this._updateOrgCode();
+        this._unsubscribeCode = Store.subscribeTo(Constants.CODE, () => this.setState({code: Store.getState().code}));
+        this._unsubscribeLine = Store.subscribeTo(Constants.LINE, () => this.setState({line: Store.getState().line}));
+        this._unsubscribeRun  = Store.subscribeTo(Constants.RUN,  () => this._onRunUpdate());
+        this._unsubscribeViz  = Store.subscribeTo(Constants.VIS,  () => this._visualize = Store.getState().visualize);
     }
 
-    componentWillUnmount() {this._unsubscribe()}
+    componentWillUnmount() {
+        this._unsubscribeViz();
+        this._unsubscribeRun();
+        this._unsubscribeLine();
+        this._unsubscribeCode();
+    }
 
     componentDidUpdate() {
-        if (this.state.line === this._line) {return}
-
-        const rootEl  = ReactDOM.findDOMNode(this);
-        const lineEl  = rootEl.querySelector(`.${CLS_LINE}`);
-        const rowsEl  = lineEl.parentNode;
-        const pos     = lineEl.offsetTop - rowsEl.scrollTop;
-        if ((pos >= (rowsEl.clientHeight - 20) || pos <= 0) && this._editor) {
-            this._editor.setScrollPosition({scrollTop: lineEl.parentNode.scrollTop += (pos - 30)});
-        }
-        this._line    = this.state.line;
+        this.state.line !== this._line && this._updateLine();
+        this._updateValidation();
     }
 
     render () {
-        const validCls = this._isValid(this.state.code) ? '' : CLS_ERROR;
-        const errMsg   = validCls ? 'Invalid code' : '';
         const value    = this.state.code;
         const lines    = this._lines(value);
         const map      = this._linesMap;
@@ -87,12 +72,6 @@ class Code extends React.Component {
         const org      = this._rendered ? BioVM.getVM().orgs.get(0) : {};
         const mol      = (lines[map[org.mol      || 0]] || [0,0])[1];
         const molWrite = (lines[map[org.molWrite || 0]] || [0,0])[1];
-        const options  = {
-            selectOnLineNumbers: true,
-            lineNumbers: 'off',
-            scrollBeyondLastLine: false
-          };
-
         this._rendered = true;
 
         return (
@@ -109,7 +88,7 @@ class Code extends React.Component {
                     language="line"
                     theme="lineTheme"
                     value={value}
-                    options={options}
+                    options={Monaco.getOptions()}
                     onChange={this._onChange.bind(this)}
                     editorDidMount={this.editorDidMount.bind(this)}
                 />
@@ -122,6 +101,25 @@ class Code extends React.Component {
         editor.onDidScrollChange((e, n) => {
             ReactDOM.findDOMNode(this).querySelector('.rows').scrollTop = e.scrollTop;
         });
+    }
+
+    _updateLine() {
+        const rootEl  = ReactDOM.findDOMNode(this);
+        const lineEl  = rootEl.querySelector(`.${CLS_LINE}`);
+        const rowsEl  = lineEl.parentNode;
+        const pos     = lineEl.offsetTop - rowsEl.scrollTop;
+        if ((pos >= (rowsEl.clientHeight - 20) || pos <= 0) && this._editor) {
+            this._editor.setScrollPosition({scrollTop: lineEl.parentNode.scrollTop += (pos - 30)});
+        }
+        this._line    = this.state.line;
+    }
+
+    _updateValidation(code = this.state.code) {
+        const rootEl     = ReactDOM.findDOMNode(this);
+        const codeEl     = rootEl.querySelector('section');
+        const validCls   = this._isValid(code) ? '' : CLS_ERROR;
+        codeEl.className = validCls;
+        codeEl.title     = validCls ? 'Invalid code' : '';
     }
 
     _onRunUpdate() {
@@ -179,11 +177,12 @@ class Code extends React.Component {
 
     /**
      * Makes string code validation
+     * @param {String} code Code to validate
      * @return {Boolean} Validation status
      */
-    _isValid() {
-        if (this.state.code === '') {return true}
-        const code = this.state.code.split('\n');
+    _isValid(sCode) {
+        if (sCode === '') {return true}
+        const code = sCode.split('\n');
 
         for (let i = 0, len = code.length; i < len; i++) {
             if (!Bytes2Code.valid(code[i])) {return false}
@@ -196,10 +195,15 @@ class Code extends React.Component {
         return !isNaN(parseFloat(n)) && isFinite(n);
     }
 
-    _onChange(newValue, e) {
+    _onChange(e, newCode) {        
+        this._updateValidation(newCode);
+        if (!this._isValid(newCode)) {return}
+
         const oldCode = BioVM.getVM().orgs.get(0).code.slice();
-        const bCode   = Bytes2Code.toByteCode(newValue);
-        !Helpers.compare(oldCode, bCode) && Store.dispatch(Actions.code(Bytes2Code.toCode(bCode, false, false, false, false), bCode));
+        const bCode   = Bytes2Code.toByteCode(newCode);
+        if (Helpers.compare(oldCode, bCode)) {return}
+
+        Store.dispatch(Actions.code(newCode, bCode));
         BioVM.reset();
     }
 
@@ -227,7 +231,7 @@ class Code extends React.Component {
         return lines;
     }
 
-    _updateByteCode() {
+    _updateOrgCode() {
         const org = BioVM.getVM().orgs.get(0);
         org.code  = Store.getState().bCode.slice();
         org.compile();

@@ -7,6 +7,10 @@
     height: 666px;
     section {
         border: 2px solid $border-color;
+        &.error {
+            border: 2px dashed red;
+            outline: none;
+        }
     }
     .rows {
         width: 76px;
@@ -56,21 +60,6 @@
             border-top-right-radius: 9px;
             border-bottom-right-radius: 9px;
             color: $black-color;
-        }
-    }
-    textarea {
-        height: 660px;
-        width: 518px;
-        border: 2px solid $border-color;
-        font-family: monospace;
-        font-size: 14px;
-        white-space: nowrap;
-        overflow-x: hidden;
-        border-top-right-radius: $border-radius;
-        border-bottom-right-radius: $border-radius;
-        &.error {
-            border: 2px dashed red;
-            outline: none;
         }
     }
 }
