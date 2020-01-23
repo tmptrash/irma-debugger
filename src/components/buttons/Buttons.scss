@@ -6,4 +6,7 @@
         border-radius: $border-radius;
         border-color: $border-color;
     }
+    button[disabled] {
+        background-color: $disabled-color;
+    }
 }

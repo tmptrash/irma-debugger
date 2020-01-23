@@ -46,13 +46,15 @@ class Code extends React.Component {
 
     componentDidMount() {
         this._updateOrgCode();
-        this._unsubscribeCode = Store.subscribeTo(Constants.CODE, () => this.setState({code: Store.getState().code}));
-        this._unsubscribeLine = Store.subscribeTo(Constants.LINE, () => this.setState({line: Store.getState().line}));
-        this._unsubscribeRun  = Store.subscribeTo(Constants.RUN,  () => this._onRunUpdate());
-        this._unsubscribeViz  = Store.subscribeTo(Constants.VIS,  () => this._visualize = Store.getState().visualize);
+        this._unsubscribeCode    = Store.subscribeTo(Constants.CODE,     () => this.setState({code: Store.getState().code}));
+        this._unsubscribeLine    = Store.subscribeTo(Constants.LINE,     () => this.setState({line: Store.getState().line}));
+        this._unsubscribeRun     = Store.subscribeTo(Constants.RUN,      this._onRunUpdate.bind(this));
+        this._unsubscribeViz     = Store.subscribeTo(Constants.VIS,      () => this._visualize = Store.getState().visualize);
+        this._unsubscribeCompile = Store.subscribeTo(Constants.COMPILE,  this._onCompileUpdate.bind(this));
     }
 
     componentWillUnmount() {
+        this._unsubscribeCompile();
         this._unsubscribeViz();
         this._unsubscribeRun();
         this._unsubscribeLine();
@@ -76,11 +78,12 @@ class Code extends React.Component {
 
         return (
             <div className="code">
-                <div className="rows">
-                    {lines.map((line,i) => <div key={i} className="row" onClick={this._onBreakpoint.bind(this)}>
+                <div className="rows"> {
+                    lines.map((line,i) => <div key={i} className="row" onClick={this._onBreakpoint.bind(this)}>
                         <div className={this._onLine(i, line, curLine)}>{line[0]}</div>
                         <div className={line[1] === molWrite ? CLS_WRITE  : (line[1] === mol ? CLS_MOL : '')} title={line[1] === molWrite ? 'write head' : (line[1] === mol ? 'molecule head' : '')}>{line[1]}</div>
-                    </div>)}
+                    </div>)
+                }
                 </div>
                 <ControlledEditor
                     width="700px"
@@ -127,6 +130,16 @@ class Code extends React.Component {
             this._run = true;
             this._onRun();
         }
+    }
+
+    _onCompileUpdate() {
+        const org   = BioVM.getVM().orgs.get(0);
+        const sCode = this._editor.getValue();
+        const bCode = Bytes2Code.toByteCode(sCode);
+
+        this._updateOrgCode(bCode);
+        Store.dispatch(Actions.code(sCode, bCode));
+        Store.dispatch(Actions.line(org.line));
     }
 
     _onLine(i, line, curLine) {
@@ -195,16 +208,15 @@ class Code extends React.Component {
         return !isNaN(parseFloat(n)) && isFinite(n);
     }
 
-    _onChange(e, newCode) {        
+    _onChange(e, newCode) {
+        Store.dispatch(Actions.changed(true));
         this._updateValidation(newCode);
         if (!this._isValid(newCode)) {return}
 
-        const oldCode = BioVM.getVM().orgs.get(0).code.slice();
+        const org     = BioVM.getVM().orgs.get(0);
+        const oldCode = org.code.slice();
         const bCode   = Bytes2Code.toByteCode(newCode);
         if (Helpers.compare(oldCode, bCode)) {return}
-
-        Store.dispatch(Actions.code(newCode, bCode));
-        BioVM.reset();
     }
 
     _lines(code) {
@@ -231,10 +243,14 @@ class Code extends React.Component {
         return lines;
     }
 
-    _updateOrgCode() {
+    /**
+     * Updates code of organism, which was changed by user or externally in an editor
+     */
+    _updateOrgCode(bCode = this.state.bCode) {
         const org = BioVM.getVM().orgs.get(0);
-        org.code  = Store.getState().bCode.slice();
+        org.code  = bCode.slice();
         org.compile();
+        org.mol = 0;
     }
 }
 

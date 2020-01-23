@@ -1,5 +1,6 @@
 import React from 'react';
 import './Buttons.scss';
+import Constants from './../../Constants';
 import {Actions} from './../../Actions';
 import BioVM from './../../BioVM';
 import Store from './../../Store';
@@ -9,28 +10,28 @@ import Bytes2Code from 'irma/src/irma/Bytes2Code';
 class Buttons extends React.Component {
     constructor () {
         super();
-        this.state = {iter: 0};
+        this.state = {iter: 0, compiled: true};
         this._iter = 0;
     }
 
     componentDidMount() {
-        this._unsubscribe = Store.subscribe(() => {
-            const iter = Store.getState().iter;
-            if (this._iter !== iter) {
-                this.setState({iter: iter});
-                this._iter = iter;
-            }
-        });
+        this._unsubscribeChanged = Store.subscribeTo(Constants.CHANGED, () => this.setState({compiled: false}));
+        this._unsubscribeIter    = Store.subscribeTo(Constants.ITER, this._onIterUpdate.bind(this));
     }
 
-    componentWillUnmount() {this._unsubscribe()}
+    componentDidUpdate() {}
+
+    componentWillUnmount() {
+        this._unsubscribeChanged();
+        this._unsubscribeIter();
+    }
 
     render () {
         return (
             <div className="buttons">
-                <button title="Step - F10" onClick={this._onStep.bind(this)}>Step</button>
-                <button title="Run - F8" onClick={this._onRun.bind(this)}>Run</button>
-                <button title="Compile - F9" onClick={this._onCompile.bind(this)}>Compile</button>
+                <button title="Step - F10" onClick={this._onStep.bind(this)} disabled={!this.state.compiled}>Step</button>
+                <button title="Run - F8" onClick={this._onRun.bind(this)} disabled={!this.state.compiled}>Run</button>
+                <button title="Compile - F9" onClick={this._onCompile.bind(this)} disabled={this.state.compiled}>Compile</button>
                 <label>Visualize:<input type="checkbox" value="Visualize" onChange={this._onVisualize.bind(this)} checked={Store.getState().visualize}></input></label>
                 <span> Iteration: {this.state.iter}</span>
             </div>
@@ -39,6 +40,14 @@ class Buttons extends React.Component {
 
     _onVisualize(event) {
         Store.dispatch(Actions.visualize(event.target.checked));
+    }
+
+    _onIterUpdate() {
+        const iter = Store.getState().iter;
+        if (this._iter !== iter) {
+            this.setState({iter: iter});
+            this._iter = iter;
+        }
     }
 
     _onStep() {
@@ -58,7 +67,8 @@ class Buttons extends React.Component {
     }
 
     _onCompile() {
-        BioVM.reset();
+        Store.dispatch(Actions.compile());
+        this.setState({compiled: true});
     }
 }
 

@@ -21,6 +21,10 @@ export default function Reducer(state, action) {
             return Object.assign({}, state, newState, {iter: action.value});
         case Constants.VIS:
             return Object.assign({}, state, newState, {visualize: action.value});
+        case Constants.COMPILE:
+            return Object.assign({}, state, newState);
+        case Constants.CHANGED:
+            return Object.assign({}, state, newState, {changed: action.value});
 
         default:
             return state;
