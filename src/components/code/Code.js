@@ -16,6 +16,7 @@ import Store from './../../Store';
 import {Actions} from './../../Actions';
 import Bytes2Code from 'irma/src/irma/Bytes2Code';
 import IrmaConfig from 'irma/src/Config';
+import Helper from 'irma/src/common/Helper';
 import BioVM from './../../BioVM';
 
 const CLS_BP    = 'bp';
@@ -46,6 +47,9 @@ class Code extends React.Component {
 
     componentDidMount() {
         this._updateOrgCode();
+        this._onUpdateMetadataCb = this._onUpdateMetadata.bind(this);
+        Helper.override(BioVM.getVM().orgs.get(0), 'updateMetadata', this._onUpdateMetadataCb);
+
         this._unsubscribeCode    = Store.subscribeTo(Constants.CODE,     () => this.setState({code: Store.getState().code}));
         this._unsubscribeLine    = Store.subscribeTo(Constants.LINE,     () => this.setState({line: Store.getState().line}));
         this._unsubscribeRun     = Store.subscribeTo(Constants.RUN,      this._onRunUpdate.bind(this));
@@ -59,6 +63,7 @@ class Code extends React.Component {
         this._unsubscribeRun();
         this._unsubscribeLine();
         this._unsubscribeCode();
+        Helper.unOverride(BioVM.getVM().orgs.get(0), 'updateMetadata', this._onUpdateMetadataCb);
     }
 
     componentDidUpdate() {
@@ -106,6 +111,8 @@ class Code extends React.Component {
         });
     }
 
+    _onUpdateMetadata() {}
+    
     _updateLine() {
         const rootEl  = ReactDOM.findDOMNode(this);
         const lineEl  = rootEl.querySelector(`.${CLS_LINE}`);
