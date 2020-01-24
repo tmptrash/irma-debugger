@@ -13,5 +13,6 @@ export const Actions = {
   iter     : value    => ({type: Constants.ITER,    value}),
   visualize: value    => ({type: Constants.VIS,     value}),
   compile  : ()       => ({type: Constants.COMPILE}),
-  changed  : value    => ({type: Constants.CHANGED, value})
+  changed  : value    => ({type: Constants.CHANGED, value}),
+  error    : value    => ({type: Constants.ERROR,   value})
 };

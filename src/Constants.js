@@ -13,5 +13,6 @@ export default {
     ITER   : 4,
     VIS    : 5,
     COMPILE: 6,
-    CHANGED: 7
+    CHANGED: 7,
+    ERROR  : 8
 };

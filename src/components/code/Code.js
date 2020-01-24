@@ -139,9 +139,12 @@ class Code extends React.Component {
     _updateValidation(code = this.state.code) {
         const rootEl     = ReactDOM.findDOMNode(this);
         const codeEl     = rootEl.querySelector('section');
-        const validCls   = this._isValid(code) ? '' : CLS_ERROR;
+        const valid      = this._isValid(code);
+        const validCls   = valid ? '' : CLS_ERROR;
         codeEl.className = validCls;
         codeEl.title     = validCls ? 'Invalid code' : '';
+
+        return valid;
     }
 
     _onRunUpdate() {
@@ -218,9 +221,13 @@ class Code extends React.Component {
         const code = sCode.split('\n');
 
         for (let i = 0, len = code.length; i < len; i++) {
-            if (!Bytes2Code.valid(code[i])) {return false}
+            if (!Bytes2Code.valid(code[i])) {
+                Store.dispatch(Actions.error(`Error in code: '${code[i]}', line: ${this._lines[i][0]}`));
+                return false;
+            }
         }
 
+        Store.dispatch(Actions.error(''));
         return true;
     }
 
@@ -230,8 +237,7 @@ class Code extends React.Component {
 
     _onChange(e, newCode) {
         Store.dispatch(Actions.changed(true));
-        this._updateValidation(newCode);
-        if (!this._isValid(newCode)) {return}
+        if (!this._updateValidation(newCode)) {return}
 
         const org     = BioVM.getVM().orgs.get(0);
         const oldCode = org.code.slice();

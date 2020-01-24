@@ -16,17 +16,21 @@ class Buttons extends React.Component {
 
     componentDidMount() {
         this._unsubscribeChanged = Store.subscribeTo(Constants.CHANGED, () => this.setState({compiled: false}));
-        this._unsubscribeIter    = Store.subscribeTo(Constants.ITER, this._onIterUpdate.bind(this));
+        this._unsubscribeIter    = Store.subscribeTo(Constants.ITER,    this._onIterUpdate.bind(this));
+        this._unsubscribeErr     = Store.subscribeTo(Constants.ERROR,   () => this.setState({error: Store.getState().error}));
     }
 
     componentDidUpdate() {}
 
     componentWillUnmount() {
+        this._unsubscribeErr();
         this._unsubscribeChanged();
         this._unsubscribeIter();
     }
 
     render () {
+        const err = this.state.error;
+
         return (
             <div className="buttons">
                 <button title="Step - F10" onClick={this._onStep.bind(this)} disabled={!this.state.compiled}>Step</button>
@@ -34,6 +38,7 @@ class Buttons extends React.Component {
                 <button title="Compile - F9" onClick={this._onCompile.bind(this)} disabled={this.state.compiled}>Compile</button>
                 <label>Visualize:<input type="checkbox" value="Visualize" onChange={this._onVisualize.bind(this)} checked={Store.getState().visualize}></input></label>
                 <span> Iteration: {this.state.iter}</span>
+                <span className={err ? 'error' : ''}>{err}</span>
             </div>
         );
     }

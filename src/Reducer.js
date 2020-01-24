@@ -25,6 +25,8 @@ export default function Reducer(state, action) {
             return Object.assign({}, state, newState);
         case Constants.CHANGED:
             return Object.assign({}, state, newState, {changed: action.value});
+        case Constants.ERROR:
+            return Object.assign({}, state, newState, {error: action.value});
 
         default:
             return state;
