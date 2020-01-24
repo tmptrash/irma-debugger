@@ -33,7 +33,8 @@ class Code extends React.Component {
         const bCode       = Bytes2Code.toByteCode(code);
         this.state        = {code, bCode, line: 0};
 
-        this._linesMap    = {};
+        this._linesMap    = null;    // {bCodeLineIdx: sCodeLineIdx}
+        this._lines       = null;
         this._rendered    = false;
         this._breakpoints = {};
         this._run         = false;
@@ -41,15 +42,16 @@ class Code extends React.Component {
         this._editor      = null;
         this._line        = 0;
 
+        [this._lines, this._linesMap] = this._getLines(code);
         Store.dispatch(Actions.code(code, bCode));
         monaco.init().then(Monaco.init);
     }
 
     componentDidMount() {
         this._updateOrgCode();
+
         this._onUpdateMetadataCb = this._onUpdateMetadata.bind(this);
         Helper.override(BioVM.getVM().orgs.get(0), 'updateMetadata', this._onUpdateMetadataCb);
-
         this._unsubscribeCode    = Store.subscribeTo(Constants.CODE,     () => this.setState({code: Store.getState().code}));
         this._unsubscribeLine    = Store.subscribeTo(Constants.LINE,     () => this.setState({line: Store.getState().line}));
         this._unsubscribeRun     = Store.subscribeTo(Constants.RUN,      this._onRunUpdate.bind(this));
@@ -73,7 +75,7 @@ class Code extends React.Component {
 
     render () {
         const value    = this.state.code;
-        const lines    = this._lines(value);
+        const lines    = this._lines;
         const map      = this._linesMap;
         const curLine  = map[this.state.line];
         const org      = this._rendered ? BioVM.getVM().orgs.get(0) : {};
@@ -111,8 +113,18 @@ class Code extends React.Component {
         });
     }
 
-    _onUpdateMetadata() {}
-    
+    /**
+     * This method only updates metadata: Organism.offs|funcs|stack.
+     * @param {Number} index1 Start index in a code, where change was occure
+     * @param {Number} index2 End index in a code where changed were occure
+     * @param {Number} dir Direction. 1 - inserted code, -1 - removed code
+     * @param {Number} fCount Previous amount of functions in a code
+     * @override
+     */
+    _onUpdateMetadata(index1 = 0, index2 = 0, dir = 1, fCount = -1) {
+        // TODO: we should update sCode in  Monaco editor
+    }
+
     _updateLine() {
         const rootEl  = ReactDOM.findDOMNode(this);
         const lineEl  = rootEl.querySelector(`.${CLS_LINE}`);
@@ -144,6 +156,7 @@ class Code extends React.Component {
         const sCode = this._editor.getValue();
         const bCode = Bytes2Code.toByteCode(sCode);
 
+        [this._lines, this._linesMap] = this._getLines(sCode);
         this._updateOrgCode(bCode);
         Store.dispatch(Actions.code(sCode, bCode));
         Store.dispatch(Actions.line(org.line));
@@ -226,10 +239,11 @@ class Code extends React.Component {
         if (Helpers.compare(oldCode, bCode)) {return}
     }
 
-    _lines(code) {
+    _getLines(code) {
         const splitted = code.split('\n');
         const len      = splitted.length;
         const lines    = new Array(len + 1);
+        const linesMap = {};
         let   line     = -1;
         let   mol      = 0;
 
@@ -239,15 +253,15 @@ class Code extends React.Component {
                 ln[0] = '\u0000';
                 ln[1] = '\u0000';
             } else {
-                this._linesMap[++line] = i;
+                linesMap[++line] = i;
                 ln[0] = line;
                 ln[1] = Bytes2Code.isMol(splitted[i]) ? mol++ : mol;
             }
         }
         lines[len] = [++line];
-        this._linesMap[line] = len;
+        linesMap[line] = len;
 
-        return lines;
+        return [lines, linesMap];
     }
 
     /**
