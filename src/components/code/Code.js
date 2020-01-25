@@ -114,7 +114,8 @@ class Code extends React.Component {
     }
 
     /**
-     * This method only updates metadata: Organism.offs|funcs|stack.
+     * Is called if metadata should be updated. Updates string code for user
+     * if script has changed itself in a byte code
      * @param {Number} index1 Start index in a code, where change was occure
      * @param {Number} index2 End index in a code where changed were occure
      * @param {Number} dir Direction. 1 - inserted code, -1 - removed code
@@ -122,7 +123,15 @@ class Code extends React.Component {
      * @override
      */
     _onUpdateMetadata(index1 = 0, index2 = 0, dir = 1, fCount = -1) {
-        // TODO: we should update sCode in  Monaco editor
+        if (index2 === 0) {return}
+        const lines = Store.getState().code.split('\n');
+        const bCode = Store.getState().bCode;
+        //
+        // Lines were inserted or removed
+        //
+        dir > 0 ? lines.splice(index1, 0, ...Bytes2Code.toCode(bCode.subarray(index1, index2))) : lines.splice(index1, index2 - index1 + 1);
+
+        Store.dispatch(Actions.code(lines.join('\n'), bCode));
     }
 
     _updateLine() {
@@ -139,10 +148,8 @@ class Code extends React.Component {
     _updateValidation(code = this.state.code) {
         const rootEl     = ReactDOM.findDOMNode(this);
         const codeEl     = rootEl.querySelector('section');
-        const valid      = this._isValid(code);
-        const validCls   = valid ? '' : CLS_ERROR;
-        codeEl.className = validCls;
-        codeEl.title     = validCls ? 'Invalid code' : '';
+        const valid      = this._checkValid(code);
+        codeEl.className = valid ? '' : CLS_ERROR;
 
         return valid;
     }
@@ -216,7 +223,7 @@ class Code extends React.Component {
      * @param {String} code Code to validate
      * @return {Boolean} Validation status
      */
-    _isValid(sCode) {
+    _checkValid(sCode) {
         if (sCode === '') {return true}
         const code = sCode.split('\n');
 
