@@ -125,11 +125,11 @@ class Code extends React.Component {
     _onUpdateMetadata(index1 = 0, index2 = 0, dir = 1, fCount = -1) {
         if (index2 === 0) {return}
         const lines = Store.getState().code.split('\n');
-        const bCode = Store.getState().bCode;
+        const bCode = BioVM.getVM().orgs.get(0).code;
         //
         // Lines were inserted or removed
         //
-        dir > 0 ? lines.splice(index1, 0, ...Bytes2Code.toCode(bCode.subarray(index1, index2))) : lines.splice(index1, index2 - index1 + 1);
+        dir > 0 ? lines.splice(index1, 0, ...Bytes2Code.toCode(bCode.subarray(index1, index2 + 1)).split('\n')) : lines.splice(index1, index2 - index1);
 
         Store.dispatch(Actions.code(lines.join('\n'), bCode));
     }
@@ -281,10 +281,11 @@ class Code extends React.Component {
      * Updates code of organism, which was changed by user or externally in an editor
      */
     _updateOrgCode(bCode = this.state.bCode) {
-        const org = BioVM.getVM().orgs.get(0);
-        org.code  = bCode.slice();
+        const org    = BioVM.getVM().orgs.get(0);
+        org.code     = bCode.slice();
         org.compile();
-        org.mol = 0;
+        org.mol      = 0;
+        org.molWrite = 0;
     }
 }
 

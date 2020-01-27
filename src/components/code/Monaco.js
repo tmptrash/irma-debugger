@@ -32,7 +32,7 @@ class Monaco {
                 { token: 'line-num',     foreground: '008040', fontStyle: 'bold' },
                 { token: 'line-comment', foreground: '555555' },
                 { token: 'line-bio',     foreground: '005c00' },
-                { token: 'line-ann',     foreground: '333333' }
+                { token: 'line-ann',     foreground: '555555' }
             ]
         });
     }
