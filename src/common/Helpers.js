@@ -53,6 +53,10 @@ class Helpers {
         
         return true;
     }
+
+    static isNumeric(n) {
+        return !isNaN(parseFloat(n)) && isFinite(n);
+    }
 }
 
 module.exports = Helpers;

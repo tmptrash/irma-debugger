@@ -56,14 +56,12 @@ class Buttons extends React.Component {
     }
 
     _onStep() {
-        const vm      = BioVM.getVM();
-        const org     = vm.orgs.get(0);
-        const oldCode = org.code.slice();
+        const vm  = BioVM.getVM();
+        const org = vm.orgs.get(0);
         vm.run();
         vm.world.canvas.update();
         Store.dispatch(Actions.iter(vm.iteration));
         Store.dispatch(Actions.line(org.line));
-        !Helpers.compare(oldCode, org.code) && Store.dispatch(Actions.code(Bytes2Code.toCode(org.code, false, false, false, false), org.code));
         Store.dispatch(Actions.run(false));
     }
 

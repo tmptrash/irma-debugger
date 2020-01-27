@@ -11,7 +11,6 @@ import {ControlledEditor} from '@monaco-editor/react';
 import { monaco } from '@monaco-editor/react';
 import Monaco from './Monaco';
 import Constants from './../../Constants';
-import Helpers from './../../common/Helpers';
 import Store from './../../Store';
 import {Actions} from './../../Actions';
 import Bytes2Code from 'irma/src/irma/Bytes2Code';
@@ -50,8 +49,10 @@ class Code extends React.Component {
     componentDidMount() {
         this._updateOrgCode();
 
+        const org                = BioVM.getVM().orgs.get(0);
         this._onUpdateMetadataCb = this._onUpdateMetadata.bind(this);
-        Helper.override(BioVM.getVM().orgs.get(0), 'updateMetadata', this._onUpdateMetadataCb);
+        Helper.override(org, 'updateMetadata', this._onUpdateMetadataCb);
+
         this._unsubscribeCode    = Store.subscribeTo(Constants.CODE,     () => this.setState({code: Store.getState().code}));
         this._unsubscribeLine    = Store.subscribeTo(Constants.LINE,     () => this.setState({line: Store.getState().line}));
         this._unsubscribeRun     = Store.subscribeTo(Constants.RUN,      this._onRunUpdate.bind(this));
@@ -65,7 +66,9 @@ class Code extends React.Component {
         this._unsubscribeRun();
         this._unsubscribeLine();
         this._unsubscribeCode();
-        Helper.unOverride(BioVM.getVM().orgs.get(0), 'updateMetadata', this._onUpdateMetadataCb);
+
+        const org = BioVM.getVM().orgs.get(0);
+        Helper.unOverride(org, 'updateMetadata', this._onUpdateMetadataCb);
     }
 
     componentDidUpdate() {
@@ -114,24 +117,35 @@ class Code extends React.Component {
     }
 
     /**
-     * Is called if metadata should be updated. Updates string code for user
-     * if script has changed itself in a byte code
+     * Is called if code need to be recompilated
      * @param {Number} index1 Start index in a code, where change was occure
      * @param {Number} index2 End index in a code where changed were occure
      * @param {Number} dir Direction. 1 - inserted code, -1 - removed code
-     * @param {Number} fCount Previous amount of functions in a code
      * @override
      */
-    _onUpdateMetadata(index1 = 0, index2 = 0, dir = 1, fCount = -1) {
+    _onUpdateMetadata(index1, index2, dir, fCount, len) {
+        const lines = this._updateStrCode(index1, index2, dir, Store.getState().code.split('\n'), len);
+        Store.dispatch(Actions.code(lines.join('\n'), BioVM.getVM().orgs.get(0).code));
+    }
+
+    /**
+     * Updates string version of code according to changes (insertion or remove)
+     * @param {Number} index1 Start index in a code, where change was occure
+     * @param {Number} index2 End index in a code where changed were occure
+     * @param {Number} dir Direction. 1 - inserted code, -1 - removed code
+     * @param {Array} lines Array of string of code lines
+     * @param {Number} len Is used only in Organism.compileMove() method
+     * @return {Array} lines updated array of strings
+     */
+    _updateStrCode(index1, index2, dir, lines, len = 0) {
         if (index2 === 0) {return}
-        const lines = Store.getState().code.split('\n');
         const bCode = BioVM.getVM().orgs.get(0).code;
         //
         // Lines were inserted or removed
         //
-        dir > 0 ? lines.splice(index1, 0, ...Bytes2Code.toCode(bCode.subarray(index1, index2 + 1)).split('\n')) : lines.splice(index1, index2 - index1);
+        dir > 0 ? lines.splice(index1 + len + 1, 0, ...Bytes2Code.toCode(bCode.subarray(index1, index2), false, false, false, false).split('\n')) : lines.splice(index1 + len, index2 - index1 + len);
 
-        Store.dispatch(Actions.code(lines.join('\n'), bCode));
+        return lines;
     }
 
     _updateLine() {
@@ -238,18 +252,9 @@ class Code extends React.Component {
         return true;
     }
 
-    _isNumeric(n) {
-        return !isNaN(parseFloat(n)) && isFinite(n);
-    }
-
     _onChange(e, newCode) {
         Store.dispatch(Actions.changed(true));
-        if (!this._updateValidation(newCode)) {return}
-
-        const org     = BioVM.getVM().orgs.get(0);
-        const oldCode = org.code.slice();
-        const bCode   = Bytes2Code.toByteCode(newCode);
-        if (Helpers.compare(oldCode, bCode)) {return}
+        this._updateValidation(newCode);
     }
 
     _getLines(code) {
