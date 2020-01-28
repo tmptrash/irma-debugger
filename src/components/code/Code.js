@@ -253,6 +253,7 @@ class Code extends React.Component {
     }
 
     _onChange(e, newCode) {
+        if (Store.getState().code === newCode) {return}
         Store.dispatch(Actions.changed(true));
         this._updateValidation(newCode);
     }
