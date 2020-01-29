@@ -125,7 +125,9 @@ class Code extends React.Component {
      */
     _onUpdateMetadata(index1, index2, dir, fCount, len) {
         const lines = this._updateStrCode(index1, index2, dir, Store.getState().code.split('\n'), len);
-        Store.dispatch(Actions.code(lines.join('\n'), BioVM.getVM().orgs.get(0).code));
+        const sCode = lines.join('\n');
+        [this._lines, this._linesMap] = this._getLines(sCode);
+        Store.dispatch(Actions.code(sCode, BioVM.getVM().orgs.get(0).code));
     }
 
     /**
@@ -143,7 +145,15 @@ class Code extends React.Component {
         //
         // Lines were inserted or removed
         //
-        dir > 0 ? lines.splice(index1 + len + 1, 0, ...Bytes2Code.toCode(bCode.subarray(index1, index2), false, false, false, false).split('\n')) : lines.splice(index1 + len, index2 - index1 + len);
+        if (dir > 0) {
+            lines.splice(this._linesMap[index1 + len + 1], 0, ...Bytes2Code.toCode(bCode.subarray(index1, index2), false, false, false, false).split('\n'));
+        } else {
+            const idx = index1 + len;
+            const map = this._linesMap;
+            for (let i = 0, l = index2 - index1 + len; i < l; i++) {
+                lines.splice(map[idx + i], 1);
+            }
+        }
 
         return lines;
     }
@@ -202,16 +212,12 @@ class Code extends React.Component {
         Store.dispatch(Actions.iter(vm.iteration));
         if (this._visualize) {
             vm.world.canvas.update();
-            const code = Bytes2Code.toCode(org.code, false, false, false, false);
             Store.dispatch(Actions.line(org.line));
-            Store.dispatch(Actions.code(code, org.code));
         }
         if (this._breakpoints[org.line] || !Store.getState().run) {
             vm.world.canvas.update();
-            const code = Bytes2Code.toCode(org.code, false, false, false, false);
             Store.dispatch(Actions.iter(vm.iteration));
             Store.dispatch(Actions.line(org.line));
-            Store.dispatch(Actions.code(code, org.code));
             Store.dispatch(Actions.run(false));
             this._run = false;
             return;
