@@ -146,7 +146,7 @@ class Code extends React.Component {
         // Lines were inserted or removed
         //
         if (dir > 0) {
-            lines.splice(this._linesMap[index1 + len + 1], 0, ...Bytes2Code.toCode(bCode.subarray(index1, index2), false, false, false, false).split('\n'));
+            lines.splice(this._linesMap[index1 + len] + 1, 0, ...Bytes2Code.toCode(bCode.subarray(index1, index2), false, false, false, false).split('\n'));
         } else {
             const idx = index1 + len;
             const map = this._linesMap;
