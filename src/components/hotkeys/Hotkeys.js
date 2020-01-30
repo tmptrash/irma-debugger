@@ -8,31 +8,26 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const keymap = {}
-
 class Hotkeys extends React.Component {
+
+    hotkey = '';
+    actions = [];
 
     constructor() {
         super();
-        document.addEventListener('keydown', this._handleKeydown);
+        document.addEventListener('keydown', this._handleKeydown.bind(this));
     }
 
     componentDidMount() {
         const hotkey = this.props.hotkey;
         const action = this.props.action;
         if (typeof hotkey !== 'string' || typeof action !== 'function') { return }
-        if (!Array.isArray(keymap[hotkey])) { keymap[hotkey] = [] }
-        keymap[hotkey].push(action);
+        this.hotkey = hotkey
+        this.actions.push(action);
     }
 
     componentWillUnmount() {
         document.removeEventListener('keydown', this._handleKeydown);
-    }
-
-    _handleKeydown(e) {
-        if (!Array.isArray(keymap[e.key])) { return }
-        e.preventDefault();
-        keymap[e.key].forEach((action) => action());
     }
 
     render() {
@@ -41,6 +36,12 @@ class Hotkeys extends React.Component {
                 {this.props.children}
             </React.Fragment>
         )
+    }
+
+    _handleKeydown(e) {
+        e.preventDefault();
+        if (e.key !== this.hotkey) { return }
+        this.actions.forEach((action) => action());
     }
 }
 
