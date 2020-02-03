@@ -1,14 +1,15 @@
 import React from 'react';
 import './Buttons.scss';
-import {Actions} from './../../Actions';
+import { Actions } from './../../Actions';
 import BioVM from './../../BioVM';
 import Store from './../../Store';
 import Bytes2Code from 'irma/src/irma/Bytes2Code';
+import Hotkey from './../hotkeys/Hotkeys';
 
 class Buttons extends React.Component {
-    constructor () {
+    constructor() {
         super();
-        this.state = {iter: 0};
+        this.state = { iter: 0 };
         this._iter = 0;
     }
 
@@ -16,20 +17,26 @@ class Buttons extends React.Component {
         this._unsubscribe = Store.subscribe(() => {
             const iter = Store.getState().iter;
             if (this._iter !== iter) {
-                this.setState({iter: iter});
+                this.setState({ iter: iter });
                 this._iter = iter;
             }
         });
     }
 
-    componentWillUnmount() {this._unsubscribe()}
+    componentWillUnmount() { this._unsubscribe() }
 
-    render () {
+    render() {
         return (
             <div className="buttons">
-                <button title="Step - F10" onClick={this._onStep.bind(this)}>Step</button>
-                <button title="Run - F8" onClick={this._onRun.bind(this)}>Run</button>
-                <button title="Compile - F9" onClick={this._onCompile.bind(this)}>Compile</button>
+                <Hotkey hotkey="F10" action={this._onStep.bind(this)}>
+                    <button title="Step - F10" onClick={this._onStep.bind(this)}>Step</button>
+                </Hotkey>
+                <Hotkey hotkey="F8" action={this._onRun.bind(this)}>
+                    <button title="Run - F8" onClick={this._onRun.bind(this)}>Run</button>
+                </Hotkey>
+                <Hotkey hotkey="F9" action={this._onCompile.bind(this)}>
+                    <button title="Compile - F9" onClick={this._onCompile.bind(this)}>Compile</button>
+                </Hotkey>
                 <label>Visualize:<input type="checkbox" value="Visualize" onChange={this._onVisualize.bind(this)} checked={Store.getState().visualize}></input></label>
                 <span> Iteration: {this.state.iter}</span>
             </div>
@@ -41,10 +48,10 @@ class Buttons extends React.Component {
     }
 
     _onStep() {
-        const vm   = BioVM.getVM();
+        const vm = BioVM.getVM();
         vm.run();
         vm.world.canvas.update();
-        const org  = vm.orgs.get(0);
+        const org = vm.orgs.get(0);
         const code = Bytes2Code.toCode(org.code, false, false, false, false);
         Store.dispatch(Actions.iter(vm.iteration));
         Store.dispatch(Actions.line(org.line));
