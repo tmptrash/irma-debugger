@@ -1,17 +1,16 @@
 /**
- * Hotkeys support.
- * Hotkeys listed in keymap property as a key => value storage,
- * where storage is an array of functions.
+ * Hotkeys support. Hotkeys listed in keymap property as a key => value storage, where 
+ * storage is an array of functions.
+ * 
  * @author zostum
  */
-
 import React from 'react';
 import PropTypes from 'prop-types';
 
-class Hotkeys extends React.Component {
+class Hotkey extends React.Component {
 
-    hotkey = '';
-    actions = [];
+    _hotkey  = '';
+    _actions = [];
 
     constructor() {
         super();
@@ -22,8 +21,8 @@ class Hotkeys extends React.Component {
         const hotkey = this.props.hotkey;
         const action = this.props.action;
         if (typeof hotkey !== 'string' || typeof action !== 'function') { return }
-        this.hotkey = hotkey
-        this.actions.push(action);
+        this._hotkey = hotkey
+        this._actions.push(action);
     }
 
     componentWillUnmount() {
@@ -32,22 +31,22 @@ class Hotkeys extends React.Component {
 
     render() {
         return (
-            <React.Fragment>
+            <>
                 {this.props.children}
-            </React.Fragment>
+            </>
         )
     }
 
     _handleKeydown(e) {
         e.preventDefault();
-        if (e.key !== this.hotkey) { return }
-        this.actions.forEach((action) => action());
+        if (e.key !== this._hotkey) { return }
+        this._actions.forEach((action) => action());
     }
 }
 
-Hotkeys.propTypes = {
+Hotkey.propTypes = {
     hotkey: PropTypes.string.isRequired,
     action: PropTypes.func.isRequired
 }
 
-export default Hotkeys;
+export default Hotkey;

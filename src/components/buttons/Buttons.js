@@ -4,7 +4,7 @@ import { Actions } from './../../Actions';
 import BioVM from './../../BioVM';
 import Store from './../../Store';
 import Bytes2Code from 'irma/src/irma/Bytes2Code';
-import Hotkey from './../hotkeys/Hotkeys';
+import Hotkey from './../hotkey/Hotkey';
 
 class Buttons extends React.Component {
     constructor() {
