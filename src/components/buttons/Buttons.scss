@@ -6,4 +6,13 @@
         border-radius: $border-radius;
         border-color: $border-color;
     }
+    button[disabled] {
+        background-color: $disabled-color;
+    }
+    span.error {
+        color: red;
+        font-family: Consolas;
+        font-weight: 600;
+        margin-left: 20px;
+    }
 }

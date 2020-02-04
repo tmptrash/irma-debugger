@@ -6,9 +6,12 @@
     margin-bottom: 13px;
     textarea {
         height: 196px;
-        width: 600px;
+        width: 780px;
         border: 2px solid $border-color;
         border-radius: 4px;
+        background-color: $back-color;
+        outline: none;
+        color: #fff;
         &.error {
             border: 2px dashed red;
             outline: none;

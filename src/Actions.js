@@ -6,10 +6,13 @@
 import Constants from './Constants';
 
 export const Actions = {
-  config   : value    => ({type: Constants.CONFIG, value}),
-  code     : (v0, v1) => ({type: Constants.CODE,   value: v0, value1: v1}),
-  line     : value    => ({type: Constants.LINE,   value}),
-  run      : value    => ({type: Constants.RUN,    value}),
-  iter     : value    => ({type: Constants.ITER,   value}),
-  visualize: value    => ({type: Constants.VIS,    value})
+  config   : value    => ({type: Constants.CONFIG,  value}),
+  code     : (v0, v1) => ({type: Constants.CODE,    value: v0, value1: v1}),
+  line     : value    => ({type: Constants.LINE,    value}),
+  run      : value    => ({type: Constants.RUN,     value}),
+  iter     : value    => ({type: Constants.ITER,    value}),
+  visualize: value    => ({type: Constants.VIS,     value}),
+  compile  : ()       => ({type: Constants.COMPILE}),
+  changed  : value    => ({type: Constants.CHANGED, value}),
+  error    : value    => ({type: Constants.ERROR,   value})
 };

@@ -59,24 +59,11 @@ function applyCfg() {
 function getVM () {
     return bioVM || (bioVM = new BioVM());
 }
-/**
- * Resets VM. After that code will be started from the beginning
- */
-function reset() {
-    const vm  = getVM();
-    let   org = vm.orgs.get(0);
-    vm.delOrg(org);
-    // TODO: on random position may be a molecule!
-    org = vm.addOrg(null, Math.floor(Math.random() * 100), Store.getState().bCode.slice(), IrmaConfig.energyOrg);
-    vm.world.canvas.update();
-    Store.dispatch(Actions.line(org.line));
-}
 
 Store.subscribe(applyCfg);
 /**
  * Creates BioVM instance as a singleton
  */
 export default {
-    getVM,
-    reset
+    getVM
 }
