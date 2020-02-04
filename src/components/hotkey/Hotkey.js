@@ -38,8 +38,8 @@ class Hotkey extends React.Component {
     }
 
     _handleKeydown(e) {
-        e.preventDefault();
         if (e.key !== this._hotkey) { return }
+        e.preventDefault();
         this._actions.forEach((action) => action());
     }
 }
