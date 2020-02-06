@@ -123,8 +123,8 @@ class Code extends React.Component {
      * @param {Number} dir Direction. 1 - inserted code, -1 - removed code
      * @override
      */
-    _onUpdateMetadata(index1, index2, dir, fCount, len) {
-        const lines = this._updateStrCode(index1, index2, dir, Store.getState().code.split('\n'), len);
+    _onUpdateMetadata(index1, index2, dir, fCount) {
+        const lines = this._updateStrCode(index1, index2, dir, Store.getState().code.split('\n'));
         const sCode = lines.join('\n');
         [this._lines, this._linesMap] = this._getLines(sCode);
         Store.dispatch(Actions.code(sCode, BioVM.getVM().orgs.get(0).code));
@@ -136,22 +136,20 @@ class Code extends React.Component {
      * @param {Number} index2 End index in a code where changed were occure
      * @param {Number} dir Direction. 1 - inserted code, -1 - removed code
      * @param {Array} lines Array of string of code lines
-     * @param {Number} len Is used only in Organism.compileMove() method
      * @return {Array} lines updated array of strings
      */
-    _updateStrCode(index1, index2, dir, lines, len = 0) {
+    _updateStrCode(index1, index2, dir, lines) {
         if (index2 === 0) {return}
         const bCode = BioVM.getVM().orgs.get(0).code;
+        const map   = this._linesMap;
         //
         // Lines were inserted or removed
         //
         if (dir > 0) {
-            lines.splice(this._linesMap[index1], 0, ...Bytes2Code.toCode(bCode.subarray(index1, index2), false, false, false, false).split('\n'));
+            lines.splice(map[index1], 0, ...Bytes2Code.toCode(bCode.subarray(index1, index2), false, false, false, false).split('\n'));
         } else {
-            const idx = index1 + len;
-            const map = this._linesMap;
             // we must go backwards to do correct lines remove
-            for (let i = index2 - index1 + len - 1; i >= 0; i--) {lines.splice(map[idx + i], 1)}
+            for (let i = index2 - index1 - 1; i >= 0; i--) {lines.splice(map[index1 + i], 1)}
         }
 
         return lines;
