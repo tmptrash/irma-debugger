@@ -150,7 +150,7 @@ class Code extends React.Component {
         } else {
             const idx = index1 + len;
             const map = this._linesMap;
-            for (let i = 0, l = index2 - index1 + len; i < l; i++) {
+            for (let i = index2 - index1 + len - 1; i >= 0; i--) {
                 lines.splice(map[idx + i], 1);
             }
         }
