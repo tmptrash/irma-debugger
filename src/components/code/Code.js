@@ -49,9 +49,12 @@ class Code extends React.Component {
     componentDidMount() {
         this._updateOrgCode();
 
-        const org                = BioVM.getVM().orgs.get(0);
+        const vm                 = BioVM.getVM();
+        const org                = vm.orgs.get(0);
         this._onUpdateMetadataCb = this._onUpdateMetadata.bind(this);
+        this._onUpdateAtomCb     = this._onUpdateAtom.bind(this);
         Helper.override(org, 'updateMetadata', this._onUpdateMetadataCb);
+        Helper.override(vm, 'updateAtom', this._onUpdateAtomCb);
 
         this._unsubscribeCode    = Store.subscribeTo(Constants.CODE,     () => this.setState({code: Store.getState().code}));
         this._unsubscribeLine    = Store.subscribeTo(Constants.LINE,     () => this.setState({line: Store.getState().line}));
@@ -67,7 +70,9 @@ class Code extends React.Component {
         this._unsubscribeLine();
         this._unsubscribeCode();
 
-        const org = BioVM.getVM().orgs.get(0);
+        const vm  = BioVM.getVM();
+        const org = vm.orgs.get(0);
+        Helper.unOverride(vm, 'updateAtom', this._onUpdateAtomCb);
         Helper.unOverride(org, 'updateMetadata', this._onUpdateMetadataCb);
     }
 
@@ -131,6 +136,31 @@ class Code extends React.Component {
     }
 
     /**
+     * Is called if atom separator was changed. Atom separator is a last atom
+     * in a molecule
+     * @param {Number} index Index of atom, which was changed
+     * @param {Boolean} isLast true if current atom is the last atom in molecule
+     * @override
+     */
+    _onUpdateAtom(index, isLast) {
+        const lines   = Store.getState().code.split('\n');
+        const line    = this._linesMap[index];
+        const comment = Bytes2Code.COMMENT;
+        const mol     = Bytes2Code.MOL;
+
+        if (isLast) {
+            if (lines[line].indexOf(mol) !== -1) {return}
+            const parts    = lines[line].split(comment);
+            parts.splice(1, 0, mol);
+            if (parts.length > 2) {parts[2] = `${comment} ${parts[2]}`}
+            lines[line]    = parts.join(' ');
+        } else {
+            lines[line]    = lines[line].split(mol).join(' ');
+        }
+        Store.dispatch(Actions.code(lines.join('\n'), BioVM.getVM().orgs.get(0).code));
+    }
+
+    /**
      * Updates string version of code according to changes (insertion or remove)
      * @param {Number} index1 Start index in a code, where change was occure
      * @param {Number} index2 End index in a code where changed were occure
@@ -146,7 +176,7 @@ class Code extends React.Component {
         // Lines were inserted or removed
         //
         if (dir > 0) {
-            lines.splice(map[index2], 0, ...Bytes2Code.toCode(bCode.subarray(index1, index2), false, false, false, false).split('\n'));
+            lines.splice(map[index2] || lines.length, 0, ...Bytes2Code.toCode(bCode.subarray(index1, index2), false, false, false, false).split('\n'));
         } else {
             // we must go backwards to do correct lines remove
             for (let i = index2 - index1 - 1; i >= 0; i--) {lines.splice(map[index1 + i], 1)}
