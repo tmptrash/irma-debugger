@@ -145,8 +145,8 @@ class Code extends React.Component {
     _onUpdateAtom(index, isLast) {
         const lines   = Store.getState().code.split('\n');
         const line    = this._linesMap[index];
-        const comment = Bytes2Code.COMMENT;
-        const mol     = Bytes2Code.MOL;
+        const comment = IrmaConfig.CODE_COMMENT_STR;
+        const mol     = IrmaConfig.CODE_MOL_STR;
 
         if (isLast) {
             if (lines[line].indexOf(mol) !== -1) {return}
