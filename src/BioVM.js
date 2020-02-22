@@ -40,7 +40,7 @@ function applyCfg() {
         worldCanvasButtons   : false,
         DB_ON                : false,
         orgMutationPeriod    : 10000000,
-        molAmount            : 25,
+        molAmount            : 50,
         PLUGINS              : []
     });
     IrmaConfig.DIR[0] = -IrmaConfig.WORLD_WIDTH;
