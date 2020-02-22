@@ -6,7 +6,6 @@
  * @author flatline
  */
 import Store from './Store';
-import {Actions} from './Actions';
 import IrmaConfig from 'irma/src/Config';
 //
 // This is small hack. We have to apply default config before it will be
@@ -41,7 +40,7 @@ function applyCfg() {
         worldCanvasButtons   : false,
         DB_ON                : false,
         orgMutationPeriod    : 10000000,
-        molAmount            : 5,
+        molAmount            : 25,
         PLUGINS              : []
     });
     IrmaConfig.DIR[0] = -IrmaConfig.WORLD_WIDTH;
