@@ -41,6 +41,7 @@ function applyCfg() {
         DB_ON                : false,
         orgMutationPeriod    : 10000000,
         molAmount            : 50,
+        molRandomAtomPercent : 0,
         PLUGINS              : []
     });
     IrmaConfig.DIR[0] = -IrmaConfig.WORLD_WIDTH;

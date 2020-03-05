@@ -13,7 +13,7 @@ import Monaco from './Monaco';
 import Constants from './../../Constants';
 import Store from './../../Store';
 import {Actions} from './../../Actions';
-import Bytes2Code from 'irma/src/irma/Bytes2Code';
+import Compiler from 'irma/src/irma/Compiler';
 import IrmaConfig from 'irma/src/Config';
 import Helper from 'irma/src/common/Helper';
 import BioVM from './../../BioVM';
@@ -29,7 +29,7 @@ class Code extends React.Component {
     constructor() {
         super();
         const code        = !Store.getState().code ? IrmaConfig.LUCAS[0].code : Store.getState().code;
-        const bCode       = Bytes2Code.toByteCode(code);
+        const bCode       = Compiler.toByteCode(code);
         this.state        = {code, bCode, line: 0};
 
         this._linesMap    = null;    // {bCodeLineIdx: sCodeLineIdx}
@@ -50,10 +50,9 @@ class Code extends React.Component {
         this._updateOrgCode();
 
         const vm                 = BioVM.getVM();
-        const org                = vm.orgs.get(0);
         this._onUpdateMetadataCb = this._onUpdateMetadata.bind(this);
         this._onUpdateAtomCb     = this._onUpdateAtom.bind(this);
-        Helper.override(org, 'updateMetadata', this._onUpdateMetadataCb);
+        Helper.override(Compiler, 'updateMetadata', this._onUpdateMetadataCb);
         Helper.override(vm, 'updateAtom', this._onUpdateAtomCb);
 
         this._unsubscribeCode    = Store.subscribeTo(Constants.CODE,     () => this.setState({code: Store.getState().code}));
@@ -123,12 +122,14 @@ class Code extends React.Component {
 
     /**
      * Is called if code need to be recompilated
+     * @param {Organism} org Current organism
      * @param {Number} index1 Start index in a code, where change was occure
      * @param {Number} index2 End index in a code where changed were occure
      * @param {Number} dir Direction. 1 - inserted code, -1 - removed code
      * @override
      */
-    _onUpdateMetadata(index1, index2, dir, fCount) {
+    _onUpdateMetadata(org, index1, index2, dir, fCount) {
+        if (org !== BioVM.getVM().orgs.get(0)) {return}
         const lines = this._updateStrCode(index1, index2, dir, Store.getState().code.split('\n'));
         const sCode = lines.join('\n');
         [this._lines, this._linesMap] = this._getLines(sCode);
@@ -176,7 +177,7 @@ class Code extends React.Component {
         // Lines were inserted or removed
         //
         if (dir > 0) {
-            lines.splice(map[index2] || lines.length, 0, ...Bytes2Code.toCode(bCode.subarray(index1, index2), false, false, false, false).split('\n'));
+            lines.splice(map[index2] || lines.length, 0, ...Compiler.toCode(bCode.subarray(index1, index2), false, false, false, false).split('\n'));
         } else {
             // we must go backwards to do correct lines remove
             for (let i = index2 - index1 - 1; i >= 0; i--) {lines.splice(map[index1 + i], 1)}
@@ -215,7 +216,7 @@ class Code extends React.Component {
     _onCompileUpdate() {
         const org   = BioVM.getVM().orgs.get(0);
         const sCode = this._editor.getValue();
-        const bCode = Bytes2Code.toByteCode(sCode);
+        const bCode = Compiler.toByteCode(sCode);
 
         [this._lines, this._linesMap] = this._getLines(sCode);
         this._updateOrgCode(bCode);
@@ -275,7 +276,7 @@ class Code extends React.Component {
         const code = sCode.split('\n');
 
         for (let i = 0, len = code.length; i < len; i++) {
-            if (!Bytes2Code.valid(code[i])) {
+            if (!Compiler.valid(code[i])) {
                 Store.dispatch(Actions.error(`Error in code: '${code[i]}', line: ${this._lines[i][0]}`));
                 return false;
             }
@@ -301,13 +302,13 @@ class Code extends React.Component {
 
         for (let i = 0; i < len; i++) {
             const ln = lines[i] = new Array(2);
-            if (Bytes2Code.byte(splitted[i]) === null) {
+            if (Compiler.byte(splitted[i]) === null) {
                 ln[0] = '\u0000';
                 ln[1] = '\u0000';
             } else {
                 linesMap[++line] = i;
                 ln[0] = line;
-                ln[1] = Bytes2Code.isMol(splitted[i]) ? mol++ : mol;
+                ln[1] = Compiler.isMol(splitted[i]) ? mol++ : mol;
             }
         }
         lines[len] = [++line];
@@ -322,7 +323,7 @@ class Code extends React.Component {
     _updateOrgCode(bCode = this.state.bCode) {
         const org    = BioVM.getVM().orgs.get(0);
         org.code     = bCode.slice();
-        org.compile();
+        Compiler.compile(org);
         org.mol      = 0;
         org.molWrite = 0;
     }
