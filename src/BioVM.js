@@ -40,7 +40,7 @@ function applyCfg() {
         worldCanvasButtons   : false,
         DB_ON                : false,
         orgMutationPeriod    : 10000000,
-        molAmount            : 50,
+        molAmount            : 70,
         molRandomAtomPercent : 0,
         PLUGINS              : []
     });
