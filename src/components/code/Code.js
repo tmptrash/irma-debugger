@@ -166,6 +166,7 @@ class Code extends React.Component {
             lines[line]    = lines[line].split(mol).join(' ');
         }
         Store.dispatch(Actions.code(lines.join('\n'), BioVM.getVM().orgs.get(0).code));
+        [this._lines, this._linesMap] = this._getLines(this._editor.getValue());
     }
 
     /**

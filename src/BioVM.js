@@ -52,6 +52,15 @@ function applyCfg() {
     IrmaConfig.DIRS[5] = IrmaConfig.WORLD_WIDTH - 1;
     IrmaConfig.DIRS[6] = -1;
     IrmaConfig.DIRS[7] = -IrmaConfig.WORLD_WIDTH - 1;
+
+    IrmaConfig.UNDIRS[IrmaConfig.DIRS[0]] = 'u';
+    IrmaConfig.UNDIRS[IrmaConfig.DIRS[1]] = 'ur';
+    IrmaConfig.UNDIRS[IrmaConfig.DIRS[2]] = 'r';
+    IrmaConfig.UNDIRS[IrmaConfig.DIRS[3]] = 'rd';
+    IrmaConfig.UNDIRS[IrmaConfig.DIRS[4]] = 'd';
+    IrmaConfig.UNDIRS[IrmaConfig.DIRS[5]] = 'ld';
+    IrmaConfig.UNDIRS[IrmaConfig.DIRS[6]] = 'l';
+    IrmaConfig.UNDIRS[IrmaConfig.DIRS[7]] = 'lu';
 }
 /**
  * Returns VM instance singleton
