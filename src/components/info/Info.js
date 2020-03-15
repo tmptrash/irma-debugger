@@ -8,6 +8,7 @@ import Constants from './../../Constants';
 
 const PAD_WIDTH = 4;
 const PAD_SYM   = '\u0000';
+const UNDIRS    = IrmaConfig.UNDIRS;
 
 class Info extends React.Component {
     constructor() {
@@ -36,11 +37,14 @@ class Info extends React.Component {
         if (!this._debug) {return}
         const org = BioVM.getVM().orgs.get(0);
         this._prevVals = Object.assign({}, {
-            ax : org.ax,
-            bx : org.bx,
-            re : org.re,
-            mol: org.mol,
-            molWrite: org.molWrite
+            ax  : org.ax,
+            bx  : org.bx,
+            re  : org.re,
+            head: org.head,
+            h0  : org.heads[0],
+            h1  : org.heads[1],
+            h2  : org.heads[2],
+            h3  : org.heads[3]
         });
     }
 
@@ -58,18 +62,21 @@ class Info extends React.Component {
                         <div className={this._mark('ax', org)}>{'ax'.padEnd(PAD_WIDTH, PAD_SYM)} : {org.ax}</div>
                         <div className={this._mark('bx', org)}>{'bx'.padEnd(PAD_WIDTH, PAD_SYM)} : {org.bx}</div>
                         <div className={this._mark('re', org)}>{'re'.padEnd(PAD_WIDTH, PAD_SYM)} : {org.re}</div>
-                        <div className={this._mark('mol', org)}>{'mol'.padEnd(PAD_WIDTH, PAD_SYM)} : {org.mol}</div>
-                        <div className={this._mark('molWrite', org)}>{'write'.padEnd(PAD_WIDTH, PAD_SYM)}: {org.molWrite}</div>
+                        <div className={this._mark('head', org)}>{'head'.padEnd(PAD_WIDTH, PAD_SYM)} : {org.head}</div>
+                        <div className={this._mark('h0', org)}>{'h0'.padEnd(PAD_WIDTH, PAD_SYM)} : {org.heads[0]}</div>
+                        <div className={this._mark('h1', org)}>{'h1'.padEnd(PAD_WIDTH, PAD_SYM)} : {org.heads[1]}</div>
+                        <div className={this._mark('h2', org)}>{'h2'.padEnd(PAD_WIDTH, PAD_SYM)} : {org.heads[2]}</div>
+                        <div className={this._mark('h3', org)}>{'h3'.padEnd(PAD_WIDTH, PAD_SYM)} : {org.heads[3]}</div>
                         {org.code[org.line] === IrmaConfig.CODE_CMDS.LOOP ? (<div className="loop">loop : {org.loops[org.line] || org.ax}</div>) : ''}
                     </div>
                     <div className="org">
                         <div className="header">Organism:</div>
+                        <div>dir : {UNDIRS[org.dir]}</div>
                         <div>idx : {org.index}</div>
                         <div>mIdx: {org.molIndex}</div>
                         <div>offs: {org.offset}</div>
                         <div>rgb : {org.color.toString(16)}</div>
                         <div>nrg : {org.energy}</div>
-                        <div>mol : {org.mol}</div>
                     </div>
                     <div className="probs">
                         <div className="header">Probabilities:</div>

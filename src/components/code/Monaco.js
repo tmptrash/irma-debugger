@@ -13,7 +13,7 @@ class Monaco {
         monaco.languages.setMonarchTokensProvider('line', {
             keywordsCore : ['toggle','eq','nop','add','sub','mul','div','inc','dec','rshift','lshift','rand','call','ret','nand','age','line','len','left','right','save','load','savea','loada','read','break'],
             keywordsBlock: ['func', 'loop', 'ifg', 'ifl', 'ife', 'ifne', 'ifp', 'ifn', 'ifz', 'end'],
-            keywordsBio  : ['join','split','step','see','say','listen','nread','get','put','offs','color','anab','catab','mol','mmol','smol','rmol','lmol','cmol','mcmp','w2mol','mol2w','find','reax'],
+            keywordsBio  : ['join','split','step','see','say','listen','nread','get','put','offs','color','anab','catab','mol','mmol','smol','rmol','lmol','cmol','mcmp','find','reax','dir','lhead','rhead'],
             tokenizer: {
                 root: [
                     [/\s*\d+/, "line-num"],

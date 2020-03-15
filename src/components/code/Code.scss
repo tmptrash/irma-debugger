@@ -38,15 +38,20 @@
                 border-radius: $border-radius;
                 color: $black-color;
             }
-            .mol {
+            .head0 {
                 background-color: #FFEB3B;
                 color: $black-color;
             }
-            .read {
-                background-color: #f8ef8a;
-            }
-            .write {
+            .head1 {
                 background-color: #4CAF50;
+                color: $black-color;
+            }
+            .head2 {
+                background-color: #CC0000;
+                color: $black-color;
+            }
+            .head3 {
+                background-color: #0000FF;
                 color: $black-color;
             }
             .ln {

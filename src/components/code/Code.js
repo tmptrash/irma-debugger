@@ -21,8 +21,6 @@ import BioVM from './../../BioVM';
 const CLS_BP    = 'bp';
 const CLS_ROW   = 'ln';
 const CLS_LINE  = 'line';
-const CLS_MOL   = 'mol';
-const CLS_WRITE = 'write';
 const CLS_ERROR = 'error';
 
 class Code extends React.Component {
@@ -85,9 +83,8 @@ class Code extends React.Component {
         const lines    = this._lines;
         const map      = this._linesMap;
         const curLine  = map[this.state.line];
-        const org      = this._rendered ? BioVM.getVM().orgs.get(0) : {};
-        const mol      = (lines[map[org.mol      || 0]] || [0,0])[1];
-        const molWrite = (lines[map[org.molWrite || 0]] || [0,0])[1];
+        const org      = this._rendered ? BioVM.getVM().orgs.get(0) : {heads: []};
+        const heads    = [(lines[map[org.heads[0] || 0]] || [0,0])[1], (lines[map[org.heads[1] || 0]] || [0,0])[1], (lines[map[org.heads[2] || 0]] || [0,0])[1], (lines[map[org.heads[3] || 0]] || [0,0])[1]]
         this._rendered = true;
 
         return (
@@ -95,7 +92,10 @@ class Code extends React.Component {
                 <div className="rows"> {
                     lines.map((line,i) => <div key={i} className="row" onClick={this._onBreakpoint.bind(this)}>
                         <div className={this._onLine(i, line, curLine)}>{line[0]}</div>
-                        <div className={line[1] === molWrite ? CLS_WRITE  : (line[1] === mol ? CLS_MOL : '')} title={line[1] === molWrite ? 'write head' : (line[1] === mol ? 'molecule head' : '')}>{line[1]}</div>
+                        <div
+                            className={this._getHeadClass(line[1], heads)}
+                            title={this._getHeadClass(line[1], heads)}>{line[1]}
+                        </div>
                     </div>)
                 }
                 </div>
@@ -118,6 +118,13 @@ class Code extends React.Component {
         editor.onDidScrollChange((e, n) => {
             ReactDOM.findDOMNode(this).querySelector('.rows').scrollTop = e.scrollTop;
         });
+    }
+
+    _getHeadClass(line, heads) {
+        for (let i = 0, l = heads.length; i < l; i++) {
+            if (line === heads[i]) {return 'head' + i}
+        }
+        return '';
     }
 
     /**
