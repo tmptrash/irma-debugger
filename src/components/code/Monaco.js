@@ -30,7 +30,7 @@ class Monaco {
             rules: [
                 { token: 'line-core',    foreground: '005c80' },
                 { token: 'line-block',   foreground: 'ff8040' },
-                { token: 'line-flow',    foreground: 'ffa274' },
+                { token: 'line-flow',    foreground: 'ff8040' },
                 { token: 'line-num',     foreground: '008040', fontStyle: 'bold' },
                 { token: 'line-comment', foreground: '555555' },
                 { token: 'line-bio',     foreground: '005c00' },
