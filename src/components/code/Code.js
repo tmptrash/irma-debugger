@@ -185,7 +185,7 @@ class Code extends React.Component {
         // Lines were inserted or removed
         //
         if (dir > 0) {
-            lines.splice(map[index2] || lines.length, 0, ...Compiler.toCode(bCode.subarray(index1, index2), false, false, false, false).split('\n'));
+            lines.splice(map[index1] || lines.length, 0, ...Compiler.toCode(bCode.subarray(index1, index2), false, false, false, false).split('\n'));
         } else {
             // we must go backwards to do correct lines remove
             for (let i = index2 - index1 - 1; i >= 0; i--) {lines.splice(map[index1 + i], 1)}

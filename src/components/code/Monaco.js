@@ -11,10 +11,10 @@ class Monaco {
     static init(monaco) {
         monaco.languages.register({ id: 'line' });
         monaco.languages.setMonarchTokensProvider('line', {
-            keywordsCore : ['toggle','eq','nop','add','sub','mul','div','inc','dec','rshift','lshift','rand','nand','age','line','len','left','right','save','load','savea','loada','read'],
+            keywordsCore : ['toggle','eq','nop','add','sub','mul','div','inc','dec','rshift','lshift','rand','nand','age','line','len','left','right','save','load','read'],
             keywordsBlock: ['func', 'loop', 'ifg', 'ifl', 'ife', 'ifne', 'ifp', 'ifn', 'ifz', 'end'],
             keywordsFlow : ['ret','break','cont','call'],
-            keywordsBio  : ['join','split','step','see','say','listen','nread','get','put','offs','color','anab','catab','mol','mmol','smol','rmol','lmol','cmol','mcmp','find','reax','dir','lhead','rhead'],
+            keywordsBio  : ['join','split','step','see','say','listen','nread','get','put','offs','color','anab','catab','mol','mmol','smol','rmol','lmol','cmol','mcmp','asm','reax','dir','lhead','rhead'],
             tokenizer: {
                 root: [
                     [/\s*\d+/, "line-num"],
