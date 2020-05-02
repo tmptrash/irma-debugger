@@ -76,7 +76,7 @@ class Info extends React.Component {
                         <div>mIdx: {org.molIndex}</div>
                         <div>offs: {org.offset}</div>
                         <div>rgb : {org.color.toString(16)}</div>
-                        <div>nrg : {org.energy}</div>
+                        <div>nrg : {org.energy.toFixed(2)}</div>
                     </div>
                     <div className="probs">
                         <div className="header">Probabilities:</div>

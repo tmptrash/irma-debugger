@@ -47,10 +47,12 @@ class Code extends React.Component {
     componentDidMount() {
         this._updateOrgCode();
 
-        const vm                 = BioVM.getVM();
-        this._onUpdateMetadataCb = this._onUpdateMetadata.bind(this);
-        this._onUpdateAtomCb     = this._onUpdateAtom.bind(this);
+        const vm                       = BioVM.getVM();
+        this._onUpdateMetadataCb       = this._onUpdateMetadata.bind(this);
+        this._onUpdateMetadataOnMoveCb = this._onUpdateMetadataOnMove.bind(this);
+        this._onUpdateAtomCb           = this._onUpdateAtom.bind(this);
         Helper.override(Compiler, 'updateMetadata', this._onUpdateMetadataCb);
+        Helper.override(Compiler, 'updateMetadataOnMove', this._onUpdateMetadataOnMoveCb);
         Helper.override(vm, 'updateAtom', this._onUpdateAtomCb);
 
         this._unsubscribeCode    = Store.subscribeTo(Constants.CODE,     () => this.setState({code: Store.getState().code}));
@@ -71,6 +73,7 @@ class Code extends React.Component {
         const org = vm.orgs.get(0);
         Helper.unOverride(vm, 'updateAtom', this._onUpdateAtomCb);
         Helper.unOverride(org, 'updateMetadata', this._onUpdateMetadataCb);
+        Helper.unOverride(org, 'updateMetadataOnMove', this._onUpdateMetadataOnMoveCb);
     }
 
     componentDidUpdate() {
@@ -135,12 +138,36 @@ class Code extends React.Component {
      * @param {Number} dir Direction. 1 - inserted code, -1 - removed code
      * @override
      */
-    _onUpdateMetadata(org, index1, index2, dir, fCount) {
+    _onUpdateMetadata(org, index1, index2, dir) {
         if (org !== BioVM.getVM().orgs.get(0)) {return}
         const lines = this._updateStrCode(index1, index2, dir, Store.getState().code.split('\n'));
         const sCode = lines.join('\n');
         [this._lines, this._linesMap] = this._getLines(sCode);
         Store.dispatch(Actions.code(sCode, BioVM.getVM().orgs.get(0).code));
+    }
+
+    /**
+     * This method only updates metadata: Organism.offs|funcs|stack and should
+     * be called after Uint8Array.move() function calls.
+     * @param {Organism} org Organism we need to compile
+     * @param {Number} start Start index in a code, where change was occure
+     * @param {Number} end End index in a code where changed were occure
+     * @param {Number} target Destination index of insertion
+     */
+    _onUpdateMetadataOnMove(org, start, end, target) {
+        if (org !== BioVM.getVM().orgs.get(0)) {return}
+        let sCode;
+        if (target > end) {
+            const len = end - start;
+            let lines = this._updateStrCode(start, end, -1, Store.getState().code.split('\n'));
+            sCode = this._updateStrCode(target - len, end - len, 1, lines).join('\n');
+        } else {
+            let lines = this._updateStrCode(start, end, -1, Store.getState().code.split('\n'));
+            sCode = this._updateStrCode(target, target + end - start, 1, lines).join('\n');
+        }
+
+        [this._lines, this._linesMap] = this._getLines(sCode);
+        Store.dispatch(Actions.code(sCode, BioVM.getVM().orgs.get(0).code));        
     }
 
     /**
